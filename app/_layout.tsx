@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
-import { CartProvider } from "../context/CartContext";
-import { WishlistProvider } from "../context/WishlistContext";
+import { CartProvider } from "./context/CartContext";
+import { WishlistProvider } from "./context/WishlistContext";
 
 export default function RootLayout() {
   return (

@@ -1,5 +1,5 @@
 import { View, Text, FlatList } from "react-native";
-import { useWishlist } from "../../context/WishlistContext";
+import { useWishlist } from "../context/WishlistContext";
 
 export default function Wishlist() {
   const { wishlist } = useWishlist();
