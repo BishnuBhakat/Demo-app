@@ -4,64 +4,105 @@ import {
   FlatList,
   Image,
   Pressable,
-  TextInput,
-  Alert,
   StyleSheet,
+  TextInput,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useState } from "react";
 import HeaderNav from "../components/HeaderNav";
 import { groceryItems } from "./data/groceryData";
 import { useCart } from "./context/CartContext";
 import { useWishlist } from "./context/WishlistContext";
+import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView } from "react-native";
+import { useRouter } from "expo-router";
 
-const categories = ["Fruits", "Vegetables", "Dairy", "Snacks"];
+
+
+
+const CATEGORIES = ["All", "Fruits", "Vegetables", "Dairy", "Snacks"];
 
 export default function Grocery() {
-  const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [search, setSearch] = useState("");
   const { addToCart } = useCart();
   const { toggleLike } = useWishlist();
+  const router = useRouter();
+
+
+  const filteredItems = groceryItems.filter((item) => {
+    const searchMatch = item.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const categoryMatch =
+      selectedCategory === "All"
+        ? true
+        : item.category.toLowerCase() ===
+          selectedCategory.toLowerCase();
+
+    return searchMatch && categoryMatch;
+  });
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
-      {/* 🔝 HEADER */}
+    <SafeAreaView style={styles.container} edges={["top"]}>
+
       <HeaderNav />
 
-      {/* 🔍 SEARCH BAR */}
-      <View style={styles.searchBox}>
-        <TextInput placeholder="Search for groceries" />
+      {/* 🔍 SEARCH */}
+      <View style={styles.searchWrapper}>
+        <TextInput
+          placeholder="Search for groceries"
+          value={search}
+          onChangeText={setSearch}
+          style={styles.search}
+        />
       </View>
 
-      {/* 🟢 CATEGORIES */}
-      <FlatList
-        data={categories}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item}
-        contentContainerStyle={{ paddingHorizontal: 10 }}
-        renderItem={({ item }) => (
-          <Pressable
-            style={styles.category}
-            onPress={() =>
-              router.push({
-                pathname: "/grocery/category/[categories]",
-                params: { categories: item },
-              })
-            }
-          >
-            <Text>{item}</Text>
-          </Pressable>
-        )}
-      />
+      {/* 🧩 CATEGORY TABS */}
+<ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={styles.tabs}
+>
+  {CATEGORIES.map((cat) => (
+    <Pressable
+      key={cat}
+      onPress={() => {
+        setSelectedCategory(cat);
+        setSearch("");
+      }}
+      style={[
+        styles.tab,
+        selectedCategory === cat && styles.activeTab,
+      ]}
+    >
+      <Text
+        numberOfLines={1}
+        style={[
+          styles.tabText,
+          selectedCategory === cat && styles.activeText,
+        ]}
+      >
+        {cat}
+      </Text>
 
-      {/* 🛍️ PRODUCTS */}
+
+    </Pressable>
+  ))}
+</ScrollView>
+
+
+      {/* 🛒 PRODUCTS */}
       <FlatList
-        data={groceryItems}
+        data={filteredItems}
         keyExtractor={(item) => item.id}
         numColumns={2}
-        contentContainerStyle={{ padding: 10 }}
+        contentContainerStyle={styles.list}
+        columnWrapperStyle={{ gap: 12 }}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            {/* PRODUCT CLICK */}
+                {/* 🔗 CLICKABLE PRODUCT */}
             <Pressable
               onPress={() =>
                 router.push({
@@ -71,12 +112,32 @@ export default function Grocery() {
               }
             >
               <Image source={{ uri: item.image }} style={styles.image} />
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.price}>₹{item.price}</Text>
+              <View style={styles.cardBody}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.price}>₹{item.price}</Text>
+            
+              </View>
+            </Pressable>
+            {/* ❤️ Like */}
+            <Pressable
+              style={styles.heartBtn}
+              onPress={() => {
+                toggleLike(item);
+                Toast.show({
+                  type: "success",
+                  text1: "Added to Wishlist ❤️",
+                  text2: `${item.name} saved to wishlist`,
+                  position: "bottom",
+                });
+              }}
+            >
+              <Text style={styles.heartText}>❤️</Text>
             </Pressable>
 
-            {/* ACTIONS */}
-            <View style={styles.actions}>
+            <View style={styles.cardBody}>
+              {/* <Text style={styles.name}>{item.name}</Text>
+              <Text style={styles.price}>₹{item.price}</Text> */}
+
               <Pressable
                 style={styles.addBtn}
                 onPress={() => {
@@ -88,71 +149,138 @@ export default function Grocery() {
                     quantity: 1,
                     type: "grocery",
                   });
+                  Toast.show({
+                    type: "success",
+                    text1: "Added to Cart 🛒",
+                    text2: `${item.name} added successfully`,
+                    position: "bottom",
+                  });
                 }}
               >
                 <Text style={{ color: "#fff" }}>ADD</Text>
               </Pressable>
-
-              <Pressable
-                onPress={() => {
-                  toggleLike(item);
-                  Alert.alert("Liked ❤️", item.name);
-                }}
-              >
-                <Text>❤️</Text>
-              </Pressable>
+              
             </View>
           </View>
         )}
       />
-    </View>
+    </SafeAreaView>
+
   );
 }
 
 const styles = StyleSheet.create({
-  searchBox: {
-    backgroundColor: "#fff",
-    margin: 10,
-    padding: 12,
-    borderRadius: 10,
-  },
-  category: {
-    backgroundColor: "#fff",
-    paddingVertical: 10,
+ container: {
+  flex: 1,
+  backgroundColor: "#f9fafb",
+  paddingTop: 0, // ✅ prevents double padding on iOS
+},
+
+
+  /* SEARCH */
+  searchWrapper: {
     paddingHorizontal: 16,
-    borderRadius: 20,
-    marginRight: 10,
-    marginVertical: 10,
+    paddingTop: 12,
   },
+  search: {
+    backgroundColor: "#418632ff",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    fontSize: 16,
+  },
+
+  /* TABS */
+  tabs: {
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 6,
+    gap: 10,
+  },
+tab: {
+  paddingHorizontal: 18,
+  paddingVertical: 12,     // ✅ increase vertical padding
+  borderRadius: 999,
+  backgroundColor: "#e5e7eb",
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: 44,           // ✅ critical for iOS text clipping
+},
+  activeTab: {
+    backgroundColor: "#16a34a",
+  },
+tabText: {
+  fontWeight: "600",
+  color: "#111827",
+  textAlign: "center",
+  lineHeight: 20,          // ✅ prevents half-cut text
+  includeFontPadding: false, // ✅ Android fix, safe on iOS
+},
+  activeText: {
+    color: "#fff",
+  },
+
+  /* LIST */
+  list: {
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 30,
+  },
+
+  /* CARD */
   card: {
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 10,
-    margin: 6,
+    borderRadius: 16,
+    overflow: "hidden",
     flex: 1,
+    marginBottom: 12,
+    elevation: 2,
   },
   image: {
-    height: 100,
-    borderRadius: 8,
+    height: 110,
+    width: "100%",
+  },
+  cardBody: {
+    padding: 12,
   },
   name: {
     fontSize: 14,
-    marginTop: 6,
     fontWeight: "600",
+    marginBottom: 4,
   },
   price: {
-    fontWeight: "bold",
-    marginVertical: 4,
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    fontSize: 15,
+    fontWeight: "700",
+    marginBottom: 8,
   },
   addBtn: {
-    backgroundColor: "#22c55e",
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 6,
+    backgroundColor: "#16a34a",
+    paddingVertical: 8,
+    borderRadius: 10,
+    alignItems: "center",
   },
+  addText: {
+    color: "#fff",
+    fontWeight: "700",
+  },
+  heartBtn: {
+  position: "absolute",
+  top: 8,
+  right: 8,
+  backgroundColor: "#ffffffee",
+  borderRadius: 20,
+  width: 34,
+  height: 34,
+  alignItems: "center",
+  justifyContent: "center",
+  elevation: 3, // Android shadow
+  shadowColor: "#000", // iOS shadow
+  shadowOpacity: 0.2,
+  shadowRadius: 4,
+},
+heartText: {
+  fontSize: 16,
+},
+
 });

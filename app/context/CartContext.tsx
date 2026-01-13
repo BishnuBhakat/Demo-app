@@ -30,10 +30,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return [...prev, { ...item, quantity: 1 }];
     });
      // ✅ GLOBAL MESSAGE (WORKS FROM ANY PAGE)
-    Alert.alert(
-      "Added to Cart",
-      `${item.name} has been added to your cart`
-    );
+    // Alert.alert(
+    //   "Added to Cart",
+    //   `${item.name} has been added to your cart`
+    // );
   };
 
   // ✅ Update quantity
