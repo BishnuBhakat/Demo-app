@@ -1,0 +1,51 @@
+export const clothingItems = [
+    {
+      id: "c1",
+      name: "Cotton Kurti",
+      price: 899,
+      image: "https://picsum.photos/200?41",
+      category: "Kurti",
+      section: "Women",
+    },
+    {
+      id: "c2",
+      name: "Designer Saree",
+      price: 1999,
+      image: "https://picsum.photos/200?42",
+      category: "Saree",
+      section: "Women",
+    },
+    {
+      id: "c3",
+      name: "Men Blue Jeans",
+      price: 1499,
+      image: "https://picsum.photos/200?43",
+      category: "Jeans",
+      section: "Men",
+    },
+    {
+      id: "c4",
+      name: "Men T‑Shirt",
+      price: 699,
+      image: "https://picsum.photos/200?44",
+      category: "TShirt",
+      section: "Men",
+    },
+    {
+      id: "c5",
+      name: "Kids Frock",
+      price: 599,
+      image: "https://picsum.photos/200?45",
+      category: "Dress",
+      section: "Kids",
+    },
+    {
+      id: "c6",
+      name: "Running Shoes",
+      price: 2499,
+      image: "https://picsum.photos/200?46",
+      category: "Shoes",
+      section: "Footwear",
+    },
+  ];
+  

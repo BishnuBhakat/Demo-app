@@ -1,5 +1,5 @@
 import { FlatList, View, Text, Image, Pressable } from "react-native";
-import { groceryItems } from "./data/groceryData";
+import { groceryItems } from "../data/groceryData";
 import { useRouter } from "expo-router";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
