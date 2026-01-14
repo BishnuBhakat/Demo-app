@@ -45,8 +45,8 @@ export default function HeaderNav() {
       <View style={styles.container}>
         <Item label="Home" path="/(tabs)" />
         <Item label="Clothing" path="/clothing" />
-        <Item label="Grocery" path="/grocery" />
-        <Item label="Hotels" path="/hotels" />
+        <Item label="Grocery" path="/groceryMain" />
+        <Item label="Hotels" path="/hotelsMain" />
       </View>
     </View>
   );

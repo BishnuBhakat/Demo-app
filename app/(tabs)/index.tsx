@@ -15,11 +15,11 @@ export default function Home() {
         <Text style={styles.title}>👕 Clothing Store</Text>
       </Pressable>
 
-      <Pressable style={styles.content} onPress={() => router.push("/grocery")}>
+      <Pressable style={styles.content} onPress={() => router.push("/groceryMain")}>
         <Text style={styles.title}>🛒 Grocery Store</Text>
       </Pressable>
 
-      <Pressable style={styles.content} onPress={() => router.push("/hotels")}>
+      <Pressable style={styles.content} onPress={() => router.push("/hotelsMain")}>
         <Text style={styles.title}>🏨 Hotel Booking</Text>
       </Pressable>
     </View>
