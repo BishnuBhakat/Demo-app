@@ -10,8 +10,8 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import HeaderNav from "../../../components/HeaderNav";
 import { hotels } from "./../../data/hotelsData";
-import { useCart } from "../../../context/CartContext";
-import { useWishlist } from "../../../context/WishlistContext";
+import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 export default function HotelsCategory() {
   const { category } = useLocalSearchParams<{ category: string }>();
@@ -48,7 +48,14 @@ export default function HotelsCategory() {
               <Pressable
                 style={styles.addBtn}
                 onPress={() => {
-                  addToCart(item);
+                  addToCart({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    image: item.image,
+                    quantity: 1,
+                    type: "hotel",
+                  });
                   Alert.alert("Added to Booking Cart 🏨", item.name);
                 }}
               >

@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import HeaderNav from "../../components/HeaderNav";
-import { useHotelCart } from "../../context/HotelCartContext";
+import { useHotelCart } from "../context/HotelCartContext";
 
 const demoHotels = [
   {
