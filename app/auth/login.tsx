@@ -1,6 +1,8 @@
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const DEMO_USER = {
   email: "demo@gmail.com",
@@ -12,9 +14,10 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (email === DEMO_USER.email && password === DEMO_USER.password) {
-      router.replace("/(tabs)");
+        await AsyncStorage.setItem("loggedIn", "true");
+     router.replace("/(tabs)");
     } else {
       alert("Invalid credentials");
     }
