@@ -48,6 +48,7 @@ export default function Grocery() {
     <SafeAreaView style={styles.container} edges={["top"]}>
 
       <HeaderNav />
+       <Text style={styles.title}>Grocery Store </Text>
 
       {/* 🔍 SEARCH */}
       <View style={styles.searchWrapper}>
@@ -175,6 +176,7 @@ const styles = StyleSheet.create({
   backgroundColor: "#f9fafb",
   paddingTop: 0, // ✅ prevents double padding on iOS
 },
+title: { fontSize: 22, fontWeight: "700", padding: 12 },
 
 
   /* SEARCH */

@@ -6,6 +6,7 @@ export const clothingItems = [
       image: "https://picsum.photos/200?41",
       category: "Kurti",
       section: "Women",
+      description: "Comfortable cotton kurti for daily wear",
     },
     {
       id: "c2",
@@ -14,6 +15,7 @@ export const clothingItems = [
       image: "https://picsum.photos/200?42",
       category: "Saree",
       section: "Women",
+      description: "Elegant designer saree for special occasions",
     },
     {
       id: "c3",
@@ -22,6 +24,7 @@ export const clothingItems = [
       image: "https://picsum.photos/200?43",
       category: "Jeans",
       section: "Men",
+      description: "Stylish blue jeans for men",  
     },
     {
       id: "c4",
@@ -30,6 +33,7 @@ export const clothingItems = [
       image: "https://picsum.photos/200?44",
       category: "TShirt",
       section: "Men",
+      description: "Casual t-shirt for everyday wear",
     },
     {
       id: "c5",
@@ -38,6 +42,7 @@ export const clothingItems = [
       image: "https://picsum.photos/200?45",
       category: "Dress",
       section: "Kids",
+      description: "Cute frock for little girls",
     },
     {
       id: "c6",
@@ -46,5 +51,6 @@ export const clothingItems = [
       image: "https://picsum.photos/200?46",
       category: "Shoes",
       section: "Footwear",
+      description: "Comfortable running shoes for all terrains",
     },
   ];

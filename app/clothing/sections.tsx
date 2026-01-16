@@ -12,6 +12,7 @@ import HeaderNav from "../../components/HeaderNav";
 import { clothingItems } from "../data/clothingData";
 import { useCart } from "../context/CartContext";
 import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 
 const SECTIONS = ["All", "Men", "Women", "Kids", "Footwear"];
 
@@ -19,6 +20,7 @@ export default function ClothingSections() {
   const [selectedSection, setSelectedSection] = useState("All");
   const [search, setSearch] = useState("");
   const { addToCart } = useCart();
+  const router = useRouter();
 
   const filteredItems = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -43,8 +45,8 @@ export default function ClothingSections() {
   return (
     <View style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
       <HeaderNav />
-
-      <Text style={styles.title}>Clothing</Text>
+    
+      <Text style={styles.title}>Clothing Store </Text>
 
       {/* 🔍 Global Search */}
       <TextInput
@@ -79,40 +81,49 @@ export default function ClothingSections() {
           numColumns={2}
           contentContainerStyle={{ padding: 10 }}
           renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Image source={{ uri: item.image }} style={styles.image} />
+  <Pressable
+    style={styles.card}
+    onPress={() =>
+      router.push({
+        pathname: "/product/[id]",
+        params: { id: item.id },
+      })
+    }
+  >
+    <Image source={{ uri: item.image }} style={styles.image} />
 
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.meta}>
-                {item.section} • {item.category}
-              </Text>
-              <Text style={styles.price}>₹{item.price}</Text>
+    <Text style={styles.name}>{item.name}</Text>
+    <Text style={styles.meta}>
+      {item.section} • {item.category}
+    </Text>
+    <Text style={styles.price}>₹{item.price}</Text>
 
-              {/* ✅ ADD with Toast */}
-              <Pressable
-                style={styles.addBtn}
-                onPress={() => {
-                  addToCart({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    image: item.image,
-                    quantity: 1,
-                    type: "clothing",
-                  });
+    {/* ADD button stays same */}
+    <Pressable
+      style={styles.addBtn}
+      onPress={() => {
+        addToCart({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          image: item.image,
+          quantity: 1,
+          type: "clothing",
+        });
 
-                  Toast.show({
-                    type: "success",
-                    text1: "Added to Cart 🛒",
-                    text2: `${item.name} added successfully`,
-                    position: "bottom",
-                  });
-                }}
-              >
-                <Text style={{ color: "#fff", fontWeight: "700" }}>ADD</Text>
-              </Pressable>
-            </View>
-          )}
+        Toast.show({
+          type: "success",
+          text1: "Added to Cart 🛒",
+          text2: `${item.name} added successfully`,
+          position: "bottom",
+        });
+      }}
+    >
+      <Text style={{ color: "#fff", fontWeight: "700" }}>ADD</Text>
+    </Pressable>
+  </Pressable>
+)}
+
         />
       )}
     </View>

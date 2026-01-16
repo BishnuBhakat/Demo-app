@@ -1,13 +1,6 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import type { CartItem } from "@/types/cart";
 import { Alert } from "react-native";
-
-// type CartContextType = {
-//   cart: CartItem[];
-//   addToCart: (item: CartItem) => void;
-//   updateQty: (id: string, qty: number) => void;
-//   removeFromCart: (id: string) => void;
-// };
 type CartContextType = {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;

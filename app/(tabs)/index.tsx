@@ -11,7 +11,7 @@ export default function Home() {
       <HeaderNav />
       <Text style={styles.title}>Multi-Service App</Text>
 
-      <Pressable style={styles.content} onPress={() => router.push("/clothing")}>
+      <Pressable style={styles.content} onPress={() => router.push("/clothingMain")}>
         <Text style={styles.title}>👕 Clothing Store</Text>
       </Pressable>
 

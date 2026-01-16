@@ -44,7 +44,7 @@ export default function HeaderNav() {
       {/* 🔹 EXISTING NAV (UNCHANGED) */}
       <View style={styles.container}>
         <Item label="Home" path="/(tabs)" />
-        <Item label="Clothing" path="/clothing" />
+        <Item label="Clothing" path="/clothingMain" />
         <Item label="Grocery" path="/groceryMain" />
         <Item label="Hotels" path="/hotelsMain" />
       </View>
