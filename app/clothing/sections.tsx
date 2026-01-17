@@ -13,6 +13,7 @@ import { clothingItems } from "../data/clothingData";
 import { useCart } from "../context/CartContext";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
+import { ScrollView } from "react-native";
 
 const SECTIONS = ["All", "Men", "Women", "Kids", "Footwear"];
 
@@ -45,7 +46,7 @@ export default function ClothingSections() {
   return (
     <View style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
       <HeaderNav />
-    
+
       <Text style={styles.title}>Clothing Store </Text>
 
       {/* 🔍 Global Search */}
@@ -57,7 +58,11 @@ export default function ClothingSections() {
       />
 
       {/* Tabs */}
-      <View style={styles.tabs}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tabs}
+      >
         {SECTIONS.map((sec) => (
           <Pressable
             key={sec}
@@ -69,7 +74,7 @@ export default function ClothingSections() {
             </Text>
           </Pressable>
         ))}
-      </View>
+      </ScrollView>
 
       {/* Products */}
       {filteredItems.length === 0 ? (
@@ -79,7 +84,8 @@ export default function ClothingSections() {
           data={filteredItems}
           keyExtractor={(item) => item.id}
           numColumns={2}
-          contentContainerStyle={{ padding: 10 }}
+          contentContainerStyle={styles.list }
+          columnWrapperStyle={{ gap: 12 }}
           renderItem={({ item }) => (
   <Pressable
     style={styles.card}
@@ -91,13 +97,14 @@ export default function ClothingSections() {
     }
   >
     <Image source={{ uri: item.image }} style={styles.image} />
-
-    <Text style={styles.name}>{item.name}</Text>
-    <Text style={styles.meta}>
-      {item.section} • {item.category}
-    </Text>
-    <Text style={styles.price}>₹{item.price}</Text>
-
+              <View style={styles.cardBody}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.meta}>
+                  {item.section} • {item.category}
+                </Text>
+                <Text style={styles.price}>₹{item.price}</Text>
+              </View>
+              <View style={styles.cardBody}>
     {/* ADD button stays same */}
     <Pressable
       style={styles.addBtn}
@@ -119,8 +126,9 @@ export default function ClothingSections() {
         });
       }}
     >
-      <Text style={{ color: "#fff", fontWeight: "700" }}>ADD</Text>
+      <Text style={{ color: "#fff" }}>ADD</Text>
     </Pressable>
+    </View>
   </Pressable>
 )}
 
@@ -134,7 +142,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: "700", padding: 12 },
 
   search: {
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffffff",
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 10,
@@ -143,34 +151,52 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  tabs: { flexDirection: "row", paddingHorizontal: 10, marginBottom: 8 },
+  tabs: { flexDirection: "row",
+     paddingHorizontal: 16, 
+      marginTop: 12,
+     marginBottom: 35,
+     gap: 15,
+     },
   tab: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 90,
     backgroundColor: "#e5e7eb",
-    marginRight: 8,
+     alignItems: "center",
+     justifyContent: "center",
+    minHeight: 44, 
   },
   activeTab: { backgroundColor: "#2563eb" },
-  tabText: { fontWeight: "600", color: "#111" },
+  tabText: { fontWeight: "600", color: "#111", textAlign: "center", lineHeight: 20, includeFontPadding: false },
   activeText: { color: "#fff" },
 
   card: {
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 10,
-    margin: 6,
+    borderRadius: 16,
+     overflow: "hidden",
+     marginBottom: 500,
+    elevation: 2,
     flex: 1,
   },
-  image: { height: 120, borderRadius: 8 },
-  name: { fontSize: 14, fontWeight: "600", marginTop: 6 },
+  cardBody: {
+    padding: 12,
+  },
+   list: {
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 30,
+  },
+  image: { height: 120, width: "100%", },
+  name: { fontSize: 14, fontWeight: "600",marginBottom: 4, },
   meta: { fontSize: 12, color: "#6b7280", marginTop: 2 },
-  price: { fontWeight: "bold", marginVertical: 4 },
+  price: { fontSize: 15,
+    fontWeight: "700",
+    marginBottom: 8, },
   addBtn: {
     backgroundColor: "#2563eb",
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: 6,
+    
   },
 });

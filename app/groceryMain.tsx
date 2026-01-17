@@ -13,13 +13,8 @@ import { groceryItems } from "./data/groceryData";
 import { useCart } from "./context/CartContext";
 import { useWishlist } from "./context/WishlistContext";
 import Toast from "react-native-toast-message";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-
-
-
-
 const CATEGORIES = ["All", "Fruits", "Vegetables", "Dairy", "Snacks"];
 
 export default function Grocery() {
@@ -45,8 +40,7 @@ export default function Grocery() {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-
+    <View style={styles.container}>
       <HeaderNav />
        <Text style={styles.title}>Grocery Store </Text>
 
@@ -87,8 +81,6 @@ export default function Grocery() {
       >
         {cat}
       </Text>
-
-
     </Pressable>
   ))}
 </ScrollView>
@@ -136,8 +128,7 @@ export default function Grocery() {
             </Pressable>
 
             <View style={styles.cardBody}>
-              {/* <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.price}>₹{item.price}</Text> */}
+              
 
               <Pressable
                 style={styles.addBtn}
@@ -165,7 +156,7 @@ export default function Grocery() {
           </View>
         )}
       />
-    </SafeAreaView>
+    </View>
 
   );
 }
@@ -174,19 +165,19 @@ const styles = StyleSheet.create({
  container: {
   flex: 1,
   backgroundColor: "#f9fafb",
-  paddingTop: 0, // ✅ prevents double padding on iOS
+  // paddingTop: 0, // ✅ prevents double padding on iOS
 },
 title: { fontSize: 22, fontWeight: "700", padding: 12 },
 
 
   /* SEARCH */
   searchWrapper: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingHorizontal: 12,
+    
   },
   search: {
-    backgroundColor: "#418632ff",
-    paddingVertical: 12,
+    backgroundColor: "#ffffffff",
+    paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 14,
     fontSize: 16,
@@ -197,13 +188,13 @@ title: { fontSize: 22, fontWeight: "700", padding: 12 },
     flexDirection: "row",
     paddingHorizontal: 16,
     marginTop: 12,
-    marginBottom: 6,
-    gap: 10,
+    marginBottom: 35,
+    gap: 15,
   },
 tab: {
-  paddingHorizontal: 18,
+  paddingHorizontal: 16,
   paddingVertical: 12,     // ✅ increase vertical padding
-  borderRadius: 999,
+  borderRadius: 90,
   backgroundColor: "#e5e7eb",
   alignItems: "center",
   justifyContent: "center",
@@ -236,7 +227,7 @@ tabText: {
     borderRadius: 16,
     overflow: "hidden",
     flex: 1,
-    marginBottom: 12,
+    marginBottom: 500,
     elevation: 2,
   },
   image: {

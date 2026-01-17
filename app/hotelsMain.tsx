@@ -49,11 +49,11 @@ export default function Hotels() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  heading: { fontSize: 22, fontWeight: "700", marginBottom: 10 },
+  container: { flex: 1, backgroundColor: "#f5f5f5" },
+  heading: { fontSize: 22, fontWeight: "700", marginBottom: 10 ,padding:10},
   input: {
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 14,
     marginVertical: 6,
   },
@@ -66,8 +66,9 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   searchBtn: {
-    backgroundColor: "#2563eb",
-    padding: 16,
+    backgroundColor: "#ff5e00ff",
+    paddingVertical: 16,
+    paddingHorizontal: 20,
     borderRadius: 14,
     marginTop: 12,
   },

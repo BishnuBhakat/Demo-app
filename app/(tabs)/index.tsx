@@ -34,13 +34,13 @@ export default function Home() {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
 
-  const goExploreMore = () => router.push("/(tabs)/explore-more");
-  const goTrending = () => router.push("/(tabs)/trending");
-  const goTopDeals = () => router.push("/(tabs)/top-deals");
+  const goExploreMore = () => router.push("./(tabs)/explore-more");
+  const goTrending = () => router.push("./(tabs)/trending");
+  const goTopDeals = () => router.push("./(tabs)/top-deals");
 
   const goGlobalSearch = () =>
     router.push({
-      pathname: "/(tabs)/search",
+      pathname: "./(tabs)/search",
       params: { q: searchText },
     });
 
@@ -157,10 +157,10 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
 
   addressBox: {
-    padding: 14,
+    padding : 10,
     backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderColor: "#e5e7eb",
+    borderBottomWidth: 2,
+    borderColor: "#ffffffff",
   },
   addressTitle: { fontSize: 12, color: "#6b7280" },
   addressText: { fontSize: 14, fontWeight: "800" },
