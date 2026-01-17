@@ -37,6 +37,10 @@ export default function TabLayout() {
     href: null, // ✅ hides it from the bottom tab bar
   }}
 />
+<Tabs.Screen name="trending" options={{ href: null }} />
+<Tabs.Screen name="top-deals" options={{ href: null }} />
+<Tabs.Screen name="search" options={{ href: null }} />
+
 
       <Tabs.Screen
         name="offers"

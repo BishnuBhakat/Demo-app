@@ -9,6 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import HeaderNav from "../../components/HeaderNav";
 
 const OFFERS = [
@@ -19,7 +20,7 @@ const OFFERS = [
 
 const TRENDING = [
   { id: "t1", name: "Apple", price: 120, image: "https://picsum.photos/120?1" },
-  { id: "t2", name: "T‑Shirt", price: 599, image: "https://picsum.photos/120?2" },
+  { id: "t2", name: "T-Shirt", price: 599, image: "https://picsum.photos/120?2" },
   { id: "t3", name: "Shoes", price: 2499, image: "https://picsum.photos/120?3" },
 ];
 
@@ -31,12 +32,20 @@ const RANDOM_ITEMS = [
 
 export default function Home() {
   const router = useRouter();
+  const [searchText, setSearchText] = useState("");
 
   const goExploreMore = () => router.push("/(tabs)/explore-more");
+  const goTrending = () => router.push("/(tabs)/trending");
+  const goTopDeals = () => router.push("/(tabs)/top-deals");
+
+  const goGlobalSearch = () =>
+    router.push({
+      pathname: "/(tabs)/search",
+      params: { q: searchText },
+    });
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
       <HeaderNav />
 
       {/* Address */}
@@ -45,12 +54,21 @@ export default function Home() {
         <Text style={styles.addressText}>DIPTI BHOWMIK, 711204</Text>
       </Pressable>
 
-      {/* Search */}
+      {/* Global Search (opens Search page) */}
       <View style={styles.searchBox}>
-        <TextInput
-          placeholder="Search for products & services"
-          style={styles.searchInput}
-        />
+        <View style={styles.searchRow}>
+          <TextInput
+            value={searchText}
+            onChangeText={setSearchText}
+            placeholder="Search any product (grocery / clothing)…"
+            style={styles.searchInput}
+            returnKeyType="search"
+            onSubmitEditing={goGlobalSearch}
+          />
+          <Pressable onPress={goGlobalSearch} style={styles.searchBtn}>
+            <Text style={styles.searchBtnText}>Search</Text>
+          </Pressable>
+        </View>
       </View>
 
       {/* Offers Carousel */}
@@ -64,25 +82,37 @@ export default function Home() {
         ))}
       </ScrollView>
 
-      {/* Trending */}
-      <Section title="Trending for You">
+      {/* Trending for You (CLICKABLE) */}
+      <Pressable onPress={goTrending} style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Trending for You</Text>
+          <Text style={styles.viewAll}>View All</Text>
+        </View>
+
         <FlatList
           data={TRENDING}
           horizontal
           showsHorizontalScrollIndicator={false}
           keyExtractor={(i) => i.id}
           renderItem={({ item }) => (
-            <Pressable style={styles.trendingCard}>
+            <View style={styles.trendingCard}>
               <Image source={{ uri: item.image }} style={styles.trendingImg} />
-              <Text style={styles.itemName}>{item.name}</Text>
+              <Text style={styles.itemName} numberOfLines={1}>
+                {item.name}
+              </Text>
               <Text style={styles.itemPrice}>₹{item.price}</Text>
-            </Pressable>
+            </View>
           )}
         />
-      </Section>
+      </Pressable>
 
-      {/* Today's Top Deals */}
-      <Section title="Today's Top Deals">
+      {/* Today's Top Deals (CLICKABLE) */}
+      <Pressable onPress={goTopDeals} style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Today{"'"}s Top Deals</Text>
+          <Text style={styles.viewAll}>View All</Text>
+        </View>
+
         <FlatList
           data={TRENDING}
           horizontal
@@ -91,12 +121,14 @@ export default function Home() {
           renderItem={({ item }) => (
             <View style={styles.dealCard}>
               <Image source={{ uri: item.image }} style={styles.dealImg} />
-              <Text style={styles.itemName}>{item.name}</Text>
+              <Text style={styles.itemName} numberOfLines={1}>
+                {item.name}
+              </Text>
               <Text style={styles.itemPrice}>₹{item.price}</Text>
             </View>
           )}
         />
-      </Section>
+      </Pressable>
 
       {/* Explore More (FULL SECTION CLICKABLE) */}
       <Pressable onPress={goExploreMore} style={styles.section}>
@@ -115,21 +147,12 @@ export default function Home() {
           </View>
         ))}
       </Pressable>
+
+      <View style={{ height: 18 }} />
     </ScrollView>
   );
 }
 
-/* ---------- Reusable Section Wrapper ---------- */
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      {children}
-    </View>
-  );
-}
-
-/* ---------- Styles ---------- */
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
 
@@ -143,11 +166,22 @@ const styles = StyleSheet.create({
   addressText: { fontSize: 14, fontWeight: "800" },
 
   searchBox: { padding: 14 },
+  searchRow: { flexDirection: "row", gap: 10, alignItems: "center" },
   searchInput: {
+    flex: 1,
     backgroundColor: "#e5e7eb",
     borderRadius: 14,
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    fontSize: 16,
   },
+  searchBtn: {
+    backgroundColor: "#2563eb",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 14,
+  },
+  searchBtnText: { color: "#fff", fontWeight: "900" },
 
   carousel: { paddingHorizontal: 14 },
   banner: {

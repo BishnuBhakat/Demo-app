@@ -35,18 +35,31 @@ const CartContext = createContext<CartContextType | null>(null);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartState>({ grocery: [], clothing: [] });
 
-  const addToCart = (item: CartItem) => {
-    setCart((prev) => {
-      const list = prev[item.type];
-      const exists = list.find((x) => x.id === item.id);
+const addToCart = (item: CartItem) => {
+  setCart((prev) => {
+    // ✅ SAFETY GUARD
+    if (!item.type || !prev[item.type]) {
+      console.warn("Invalid cart type:", item.type, item);
+      return prev;
+    }
 
-      const updated = exists
-        ? list.map((x) => (x.id === item.id ? { ...x, quantity: x.quantity + 1 } : x))
-        : [...list, { ...item, quantity: 1 }];
+    const list = prev[item.type];
 
-      return { ...prev, [item.type]: updated };
-    });
-  };
+    const exists = list.find((x) => x.id === item.id);
+
+    const updated = exists
+      ? list.map((x) =>
+          x.id === item.id ? { ...x, quantity: x.quantity + 1 } : x
+        )
+      : [...list, { ...item, quantity: 1 }];
+
+    return {
+      ...prev,
+      [item.type]: updated,
+    };
+  });
+};
+
 
   const increaseQty = (id: string, type: CartType) => {
     setCart((prev) => ({
