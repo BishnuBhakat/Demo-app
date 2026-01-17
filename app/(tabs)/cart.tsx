@@ -1,112 +1,176 @@
-import {FlatList, Image,View, Text, Pressable, StyleSheet } from "react-native";
-import { useCart } from "../context/CartContext";
-import { useRouter } from "expo-router";
+import React, { useMemo, useState } from "react";
+import { View, Text, Pressable, StyleSheet, FlatList, Image } from "react-native";
 import HeaderNav from "../../components/HeaderNav";
+import { useCart } from "../context/CartContext"; // ✅ adjust path if needed
+import { useHotelCart } from "../context/HotelCartContext"; // ✅ if you have this hook
+import { useRouter } from "expo-router";
 
-export default function Cart() {
+
+type TabKey = "clothing" | "grocery" | "hotels";
+
+export default function CartScreen() {
+  const [tab, setTab] = useState<TabKey>("clothing");
   const router = useRouter();
-  const { cart, increaseQty, decreaseQty, removeFromCart, totalPrice } = useCart();
-  if (cart.length === 0) {
-    return (
-      <View style={styles.container}>
-        <HeaderNav />
-        <View style={styles.empty}>
-          <Text style={styles.emptyTitle}>Your cart is empty</Text>
-          <Text style={styles.emptySub}>Add some items to see them here.</Text>
-        </View>
-      </View>
-    );
-  }
+
+  const {
+    cart,
+    increaseQty,
+    decreaseQty,
+    removeFromCart,
+    clothingTotal,
+    groceryTotal,
+    clothingCount,
+    groceryCount,
+  } = useCart();
+
+  // Hotels cart (Minutes tab)
+  const hotel = useHotelCart?.() as any;
+  const hotelItems = hotel?.cart ?? [];
+  const hotelCount = hotel?.totalItems ?? hotelItems?.length ?? 0;
+  const hotelTotal = hotel?.totalPrice ?? 0;
+
+  const activeItems = useMemo(() => {
+    if (tab === "clothing") return cart.clothing;
+    if (tab === "grocery") return cart.grocery;
+    return hotelItems;
+  }, [tab, cart, hotelItems]);
+
+  const activeTotal =
+    tab === "clothing" ? clothingTotal : tab === "grocery" ? groceryTotal : hotelTotal;
+
   return (
     <View style={styles.container}>
       <HeaderNav />
+      <Text style={styles.title}>My Cart</Text>
 
-      <Text style={styles.pageTitle}>My Cart</Text>
+      {/* Tabs */}
+      <View style={styles.tabRow}>
+        <TabButton
+          label={`Clothing (${clothingCount})`}
+          active={tab === "clothing"}
+          onPress={() => setTab("clothing")}
+        />
+        <TabButton
+          label={`Grocery (${groceryCount})`}
+          active={tab === "grocery"}
+          onPress={() => setTab("grocery")}
+        />
+        {/* If you want Hotels tab later, uncomment this AND add it in UI below */}
+        {/* <TabButton
+          label={`Hotel (${hotelCount})`}
+          active={tab === "hotels"}
+          onPress={() => setTab("hotels")}
+        /> */}
+      </View>
 
+      {/* List */}
       <FlatList
-        data={cart}
-        keyExtractor={(item) => `${item.type}:${item.id}`}
+        data={activeItems}
+        keyExtractor={(item: any) => `${tab}:${item.id}`}
         contentContainerStyle={{ padding: 12, paddingBottom: 110 }}
-        renderItem={({ item }) => (
+        ListEmptyComponent={<Text style={{ padding: 20 }}>No items in this cart.</Text>}
+        renderItem={({ item }: any) => (
           <View style={styles.card}>
             <Image
               source={{ uri: item.image || "https://picsum.photos/200" }}
               style={styles.image}
             />
 
-            <View style={styles.info}>
+            <View style={{ flex: 1, marginLeft: 10 }}>
               <Text style={styles.name} numberOfLines={1}>
                 {item.name}
               </Text>
+              <Text style={styles.meta}>₹{item.price}</Text>
 
-              <Text style={styles.meta}>
-                {item.type??"grocery".toUpperCase()} • ₹{item.price}
-              </Text>
-
-              <View style={styles.bottomRow}>
-                {/* Qty Controls */}
-                <View style={styles.qtyBox}>
-                  <Pressable
-                    style={styles.qtyBtn}
-                    onPress={() => decreaseQty(item.id, item.type)}
-                  >
-                    <Text style={styles.qtyBtnText}>−</Text>
+              {/* Qty controls for grocery/clothing only */}
+              {tab !== "hotels" && (
+                <View style={styles.qtyRow}>
+                  <Pressable style={styles.qtyBtn} onPress={() => decreaseQty(item.id, tab)}>
+                    <Text style={styles.qtyText}>−</Text>
                   </Pressable>
 
-                  <Text style={styles.qtyText}>{item.quantity}</Text>
+                  <Text style={styles.qtyNum}>{item.quantity}</Text>
+
+                  <Pressable style={styles.qtyBtn} onPress={() => increaseQty(item.id, tab)}>
+                    <Text style={styles.qtyText}>+</Text>
+                  </Pressable>
 
                   <Pressable
-                    style={styles.qtyBtn}
-                    onPress={() => increaseQty(item.id, item.type)}
+                    onPress={() => removeFromCart(item.id, tab)}
+                    style={{ marginLeft: "auto" }}
                   >
-                    <Text style={styles.qtyBtnText}>+</Text>
+                    <Text style={{ color: "#ef4444", fontWeight: "900" }}>REMOVE</Text>
                   </Pressable>
                 </View>
-
-                {/* Line total */}
-                <Text style={styles.lineTotal}>₹{item.price * item.quantity}</Text>
-              </View>
-
-              <Pressable
-                onPress={() => removeFromCart(item.id, item.type)}
-                style={styles.removeBtn}
-              >
-                <Text style={styles.removeText}>REMOVE</Text>
-              </Pressable>
+              )}
             </View>
           </View>
         )}
       />
 
-      {/* Sticky Bottom Summary */}
+      {/* Sticky footer */}
       <View style={styles.footer}>
         <View>
           <Text style={styles.totalLabel}>Total Amount</Text>
-          <Text style={styles.totalValue}>₹{totalPrice}</Text>
+          <Text style={styles.totalValue}>₹{activeTotal}</Text>
         </View>
 
-        {/* ✅ Navigate to Checkout form */}
-        <Pressable style={styles.placeBtn} onPress={() => router.push("/checkout")}>
-          <Text style={styles.placeText}>PLACE ORDER</Text>
+        <Pressable
+          style={styles.placeBtn}
+          onPress={() => {
+            // ✅ Open your previous checkout form
+            // Your form file is: app/checkout.tsx
+            router.push({
+              pathname: "/checkout",
+              params: { cartType: tab }, // "clothing" | "grocery" (hotels if you enable later)
+            });
+          }}
+        >
+          <Text style={styles.placeText}>
+            {tab === "hotels" ? "BOOK NOW" : "PLACE ORDER"}
+          </Text>
         </Pressable>
       </View>
     </View>
   );
 }
+
+function TabButton({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable onPress={onPress} style={styles.tabBtn}>
+      <Text style={[styles.tabText, active && styles.tabTextActive]}>{label}</Text>
+      {active && <View style={styles.activeLine} />}
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f3f4f6" },
+  container: { flex: 1, backgroundColor: "#fff" },
+  title: { fontSize: 26, fontWeight: "900", padding: 12 },
 
-  pageTitle: {
-    fontSize: 22,
-    fontWeight: "800",
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    paddingBottom: 4,
+  tabRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: "#e5e7eb",
   },
-
-  empty: { flex: 1, alignItems: "center", justifyContent: "center" },
-  emptyTitle: { fontSize: 20, fontWeight: "800" },
-  emptySub: { marginTop: 6, color: "#6b7280" },
+  tabBtn: { flex: 1, paddingVertical: 12, alignItems: "center" },
+  tabText: { fontSize: 18, fontWeight: "700", color: "#111827" },
+  tabTextActive: { color: "#2563eb" },
+  activeLine: {
+    height: 3,
+    backgroundColor: "#2563eb",
+    width: "70%",
+    marginTop: 8,
+    borderRadius: 2,
+  },
 
   card: {
     flexDirection: "row",
@@ -114,39 +178,17 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 10,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#f3f4f6",
   },
   image: { width: 90, height: 90, borderRadius: 12, backgroundColor: "#e5e7eb" },
-
-  info: { flex: 1, marginLeft: 10 },
   name: { fontSize: 16, fontWeight: "800" },
-  meta: { marginTop: 4, color: "#6b7280", fontWeight: "600" },
+  meta: { marginTop: 4, color: "#6b7280", fontWeight: "700" },
 
-  bottomRow: {
-    marginTop: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
-  qtyBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f3f4f6",
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  qtyBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: "#e5e7eb",
-  },
-  qtyBtnText: { fontSize: 18, fontWeight: "900" },
-  qtyText: { paddingHorizontal: 12, fontWeight: "800" },
-
-  lineTotal: { fontWeight: "900", fontSize: 16 },
-
-  removeBtn: { marginTop: 10, alignSelf: "flex-start" },
-  removeText: { color: "#ef4444", fontWeight: "900" },
+  qtyRow: { flexDirection: "row", alignItems: "center", marginTop: 10, gap: 10 },
+  qtyBtn: { backgroundColor: "#e5e7eb", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
+  qtyText: { fontSize: 18, fontWeight: "900" },
+  qtyNum: { fontWeight: "900" },
 
   footer: {
     position: "absolute",
@@ -164,119 +206,6 @@ const styles = StyleSheet.create({
   totalLabel: { color: "#6b7280", fontWeight: "700" },
   totalValue: { fontSize: 18, fontWeight: "900", marginTop: 2 },
 
-  placeBtn: {
-    backgroundColor: "#fb923c",
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 12,
-  },
+  placeBtn: { backgroundColor: "#fb923c", paddingHorizontal: 18, paddingVertical: 12, borderRadius: 12 },
   placeText: { color: "#fff", fontWeight: "900" },
 });
-
-  // return (
-  //   <View style={styles.container}>
-  //     <Text style={styles.title}>Cart</Text>
-
-  //     {cart.length === 0 && (
-  //       <Text style={styles.empty}>Your cart is empty</Text>
-  //     )}
-  // );
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>My Cart</Text>
-
-//       {cart.length === 0 && (
-//         <Text style={styles.empty}>Your cart is empty</Text>
-//       )}
-
-//       {cart.map((item: CartItem) => (
-//         <View key={item.id} style={styles.card}>
-//           <Text style={styles.name}>{item.name}</Text>
-//           <Text>₹{item.price}</Text>
-
-//           {/* Quantity Controls */}
-//           <View style={styles.row}>
-//             <Pressable
-//               onPress={() =>
-//                 updateQty(item.id, Math.max(1, item.quantity - 1))
-//               }
-//             >
-//               <Text style={styles.qtyBtn}>−</Text>
-//             </Pressable>
-
-//             <Text style={styles.qty}>{item.quantity}</Text>
-
-//             <Pressable
-//               onPress={() =>
-//                 updateQty(item.id, item.quantity + 1)
-//               }
-//             >
-//               <Text style={styles.qtyBtn}>+</Text>
-//             </Pressable>
-//           </View>
-
-//           {/* Remove */}
-//           <Pressable onPress={() => removeFromCart(item.id)}>
-//             <Text style={styles.remove}>Remove</Text>
-//           </Pressable>
-//         </View>
-//       ))}
-
-//       {/* Total */}
-//       {cart.length > 0 && (
-//         <Text style={styles.total}>Total: ₹{total}</Text>
-//       )}
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     padding: 20,
-//   },
-//   title: {
-//     fontSize: 22,
-//     fontWeight: "700",
-//     marginBottom: 10,
-//   },
-//   empty: {
-//     marginTop: 20,
-//     color: "#6b7280",
-//   },
-//   card: {
-//     backgroundColor: "#fff",
-//     padding: 12,
-//     borderRadius: 10,
-//     marginBottom: 12,
-//   },
-//   name: {
-//     fontSize: 16,
-//     fontWeight: "600",
-//   },
-//   row: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginTop: 8,
-//   },
-//   qtyBtn: {
-//     fontSize: 20,
-//     width: 32,
-//     textAlign: "center",
-//     backgroundColor: "#e5e7eb",
-//     borderRadius: 6,
-//   },
-//   qty: {
-//     marginHorizontal: 10,
-//     fontSize: 16,
-//   },
-//   remove: {
-//     marginTop: 6,
-//     color: "red",
-//   },
-//   total: {
-//     fontSize: 18,
-//     fontWeight: "700",
-//     marginTop: 20,
-//   },
-// });

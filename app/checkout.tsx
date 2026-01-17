@@ -8,26 +8,33 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import HeaderNav from "../components/HeaderNav";
 import { useCart } from "./context/CartContext";
+
+type CartType = "clothing" | "grocery";
 
 export default function Checkout() {
   const router = useRouter();
   const { cart, clearCart } = useCart();
+  const params = useLocalSearchParams();
 
-  // ✅ only clothing items checkout
-  const clothingOnly = useMemo(() => cart.filter((i) => i.type === "clothing"), [cart]);
-  const groceryOnly = useMemo(() => cart.filter((i) => i.type === "grocery"), [cart]);
+  // ✅ cartType comes from cart page: router.push({ pathname:"/checkout", params:{ cartType: tab } })
+  const cartTypeParam = params.cartType;
+  const cartType: CartType =
+    cartTypeParam === "grocery" || cartTypeParam === "clothing"
+      ? cartTypeParam
+      : "clothing"; // fallback
 
-  const totalClothingPrice = useMemo(
-    () => clothingOnly.reduce((sum, i) => sum + i.price * i.quantity, 0),
-    [clothingOnly]
-  );
-  const totalGroceryPrice = useMemo(
-    () => groceryOnly.reduce((sum, i) => sum + i.price * i.quantity, 0),
-    [groceryOnly]
-  );
+  // ✅ pick only the active cart items
+  const items = useMemo(() => {
+    return cartType === "clothing" ? cart.clothing : cart.grocery;
+  }, [cartType, cart]);
+
+  const totalPrice = useMemo(() => {
+    return items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  }, [items]);
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [pincode, setPincode] = useState("");
@@ -37,8 +44,9 @@ export default function Checkout() {
   const [payment, setPayment] = useState<"COD" | "UPI" | "CARD">("COD");
 
   const placeOrder = () => {
-    if (clothingOnly.length === 0) return Alert.alert("Cart", "No clothing items in cart.");
-    if (groceryOnly.length === 0) return Alert.alert("Cart", "No grocery items in cart.");
+    if (items.length === 0) {
+      return Alert.alert("Cart", `No items in ${cartType} cart.`);
+    }
 
     if (!name.trim()) return Alert.alert("Missing", "Enter full name");
     if (phone.trim().length < 10) return Alert.alert("Missing", "Enter phone");
@@ -47,10 +55,20 @@ export default function Checkout() {
     if (!city.trim()) return Alert.alert("Missing", "Enter city");
     if (!stateName.trim()) return Alert.alert("Missing", "Enter state");
 
-    Alert.alert("✅ Order Placed", `Payment: ${payment}\nAmount: ₹${totalClothingPrice}`);
-    Alert.alert("✅ Order Placed", `Payment: ${payment}\nAmount: ₹${totalGroceryPrice}`);
-    clearCart();
-    router.replace("/account");
+    Alert.alert(
+      "✅ Order Placed",
+      `Section: ${cartType.toUpperCase()}\nPayment: ${payment}\nAmount: ₹${totalPrice}`,
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            // ✅ clear only current cart
+            clearCart(cartType);
+            router.replace("/account");
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -58,11 +76,18 @@ export default function Checkout() {
       <HeaderNav />
 
       <ScrollView contentContainerStyle={{ padding: 12, paddingBottom: 30 }}>
+        <Text style={styles.pageTitle}>Checkout - {cartType.toUpperCase()}</Text>
+
         <Text style={styles.title}>Delivery Address</Text>
 
         <View style={styles.card}>
           <Text style={styles.label}>Full Name</Text>
-          <TextInput value={name} onChangeText={setName} style={styles.input} placeholder="Enter your name" />
+          <TextInput
+            value={name}
+            onChangeText={setName}
+            style={styles.input}
+            placeholder="Enter your name"
+          />
 
           <Text style={styles.label}>Phone</Text>
           <TextInput
@@ -89,12 +114,22 @@ export default function Checkout() {
 
             <View style={{ flex: 1 }}>
               <Text style={styles.label}>City</Text>
-              <TextInput value={city} onChangeText={setCity} style={styles.input} placeholder="City" />
+              <TextInput
+                value={city}
+                onChangeText={setCity}
+                style={styles.input}
+                placeholder="City"
+              />
             </View>
           </View>
 
           <Text style={styles.label}>State</Text>
-          <TextInput value={stateName} onChangeText={setStateName} style={styles.input} placeholder="State" />
+          <TextInput
+            value={stateName}
+            onChangeText={setStateName}
+            style={styles.input}
+            placeholder="State"
+          />
 
           <Text style={styles.label}>Full Address</Text>
           <TextInput
@@ -123,12 +158,13 @@ export default function Checkout() {
 
         <View style={styles.summary}>
           <Text style={{ color: "#6b7280", fontWeight: "700" }}>Total Amount</Text>
-          <Text style={{ fontSize: 20, fontWeight: "900" }}>₹{totalClothingPrice}</Text>
-          <Text style={{ fontSize: 20, fontWeight: "900" }}>₹{totalGroceryPrice}</Text>
+          <Text style={{ fontSize: 20, fontWeight: "900" }}>₹{totalPrice}</Text>
         </View>
 
         <Pressable style={styles.placeBtn} onPress={placeOrder}>
-          <Text style={styles.placeText}>PLACE ORDER</Text>
+          <Text style={styles.placeText}>
+            PLACE ORDER ({cartType.toUpperCase()})
+          </Text>
         </Pressable>
       </ScrollView>
     </View>
@@ -136,6 +172,8 @@ export default function Checkout() {
 }
 
 const styles = StyleSheet.create({
+  pageTitle: { fontSize: 20, fontWeight: "900", marginTop: 10, marginBottom: 10 },
+
   title: { fontSize: 18, fontWeight: "900", marginTop: 8, marginBottom: 8 },
   card: { backgroundColor: "#fff", borderRadius: 14, padding: 12, marginBottom: 10 },
   label: { fontSize: 12, color: "#6b7280", fontWeight: "800", marginTop: 10, marginBottom: 6 },

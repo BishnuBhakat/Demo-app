@@ -31,6 +31,12 @@ export default function TabLayout() {
           ),
         }}
       />
+<Tabs.Screen
+  name="explore-more"
+  options={{
+    href: null, // ✅ hides it from the bottom tab bar
+  }}
+/>
 
       <Tabs.Screen
         name="offers"
