@@ -60,7 +60,7 @@ export default function Home() {
           <TextInput
             value={searchText}
             onChangeText={setSearchText}
-            placeholder="Search any product (grocery / clothing)…"
+            placeholder="Search any product (grocery / clothing / jewellery / electronics)…"
             style={styles.searchInput}
             returnKeyType="search"
             onSubmitEditing={goGlobalSearch}

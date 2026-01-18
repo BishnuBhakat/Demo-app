@@ -2,18 +2,23 @@ import { View, Text, FlatList, Image, Pressable, StyleSheet } from "react-native
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { groceryItems } from "../../data/groceryData";
 import { clothingItems } from "../../data/clothingData";
+import { jewelleryItems } from "../../data/jewelleryData";
+
 
 export default function CategoryPage() {
   const router = useRouter();
   const { type, category } = useLocalSearchParams<{
-    type: "grocery" | "clothing";
+    type: "grocery" | "clothing" | "jewellery";
     category: string;
   }>();
 
   const items =
-    type === "grocery"
-      ? groceryItems.filter((i) => i.category === category)
-      : clothingItems.filter((i) => i.category === category);
+  type === "grocery"
+    ? groceryItems.filter((i) => String(i.category) === String(category))
+    : type === "clothing"
+    ? clothingItems.filter((i) => String(i.category) === String(category))
+    : jewelleryItems.filter((i) => String(i.category) === String(category));
+
 
   return (
     <View style={styles.container}>

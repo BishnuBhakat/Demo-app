@@ -6,22 +6,25 @@ import { useHotelCart } from "../context/HotelCartContext"; // ✅ if you have t
 import { useRouter } from "expo-router";
 
 
-type TabKey = "clothing" | "grocery" | "hotels";
+type TabKey = "clothing" | "grocery" | "jewellery" | "hotels";
 
 export default function CartScreen() {
   const [tab, setTab] = useState<TabKey>("clothing");
   const router = useRouter();
 
   const {
-    cart,
-    increaseQty,
-    decreaseQty,
-    removeFromCart,
-    clothingTotal,
-    groceryTotal,
-    clothingCount,
-    groceryCount,
-  } = useCart();
+  cart,
+  increaseQty,
+  decreaseQty,
+  removeFromCart,
+  clothingTotal,
+  groceryTotal,
+  jewelleryTotal,
+  clothingCount,
+  groceryCount,
+  jewelleryCount,
+} = useCart();
+;
 
   // Hotels cart (Minutes tab)
   const hotel = useHotelCart?.() as any;
@@ -30,13 +33,21 @@ export default function CartScreen() {
   const hotelTotal = hotel?.totalPrice ?? 0;
 
   const activeItems = useMemo(() => {
-    if (tab === "clothing") return cart.clothing;
-    if (tab === "grocery") return cart.grocery;
-    return hotelItems;
-  }, [tab, cart, hotelItems]);
+  if (tab === "clothing") return cart.clothing;
+  if (tab === "grocery") return cart.grocery;
+  if (tab === "jewellery") return cart.jewellery;
+  return hotelItems;
+}, [tab, cart, hotelItems]);
+
 
   const activeTotal =
-    tab === "clothing" ? clothingTotal : tab === "grocery" ? groceryTotal : hotelTotal;
+  tab === "clothing"
+    ? clothingTotal
+    : tab === "grocery"
+    ? groceryTotal
+    : tab === "jewellery"
+    ? jewelleryTotal
+    : hotelTotal;
 
   return (
     <View style={styles.container}>
@@ -55,13 +66,14 @@ export default function CartScreen() {
           active={tab === "grocery"}
           onPress={() => setTab("grocery")}
         />
-        {/* If you want Hotels tab later, uncomment this AND add it in UI below */}
-        {/* <TabButton
-          label={`Hotel (${hotelCount})`}
-          active={tab === "hotels"}
-          onPress={() => setTab("hotels")}
-        /> */}
+        <TabButton
+        label={`Jewellery (${jewelleryCount})`}
+        active={tab === "jewellery"}
+        onPress={() => setTab("jewellery")}
+      />
       </View>
+      
+
 
       {/* List */}
       <FlatList
