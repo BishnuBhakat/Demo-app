@@ -92,69 +92,71 @@ export default function Grocery() {
         keyExtractor={(item) => item.id}
         numColumns={2}
         contentContainerStyle={styles.list}
-        columnWrapperStyle={{ gap: 12 }}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-                {/* 🔗 CLICKABLE PRODUCT */}
-            <Pressable
-              onPress={() =>
-                router.push({
-                  pathname: "/product/[id]",
-                  params: { id: item.id },
-                })
-              }
-            >
-              <Image source={{ uri: item.image }} style={styles.image} />
-              <View style={styles.cardBody}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.price}>₹{item.price}</Text>
-            
-              </View>
-            </Pressable>
-            {/* ❤️ Like */}
-            <Pressable
-              style={styles.heartBtn}
-              onPress={() => {
-                toggleLike(item);
-                Toast.show({
-                  type: "success",
-                  text1: "Added to Wishlist ❤️",
-                  text2: `${item.name} saved to wishlist`,
-                  position: "bottom",
-                });
-              }}
-            >
-              <Text style={styles.heartText}>❤️</Text>
-            </Pressable>
+        columnWrapperStyle={ styles.row }
+       renderItem={({ item }) => (
+  <View style={styles.cardWrapper}>
+    <View style={styles.card}>
+      {/* 🔗 CLICKABLE PRODUCT */}
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: "/product/[id]",
+            params: { id: item.id },
+          })
+        }
+      >
+        <Image source={{ uri: item.image }} style={styles.image} />
+        <View style={styles.cardBody}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.price}>₹{item.price}</Text>
+        </View>
+      </Pressable>
 
-            <View style={styles.cardBody}>
-              
+      {/* ❤️ Wishlist */}
+      <Pressable
+        style={styles.heartBtn}
+        onPress={() => {
+          toggleLike(item);
+          Toast.show({
+            type: "success",
+            text1: "Added to Wishlist ❤️",
+            text2: `${item.name} saved to wishlist`,
+            position: "bottom",
+          });
+        }}
+      >
+        <Text style={styles.heartText}>❤️</Text>
+      </Pressable>
 
-              <Pressable
-                style={styles.addBtn}
-                onPress={() => {
-                  addToCart({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    image: item.image,
-                    quantity: 1,
-                    type: "grocery",
-                  });
-                  Toast.show({
-                    type: "success",
-                    text1: "Added to Cart 🛒",
-                    text2: `${item.name} added successfully`,
-                    position: "bottom",
-                  });
-                }}
-              >
-                <Text style={{ color: "#fff" }}>ADD</Text>
-              </Pressable>
-              
-            </View>
-          </View>
-        )}
+      {/* ADD button */}
+      <View style={styles.cardBody}>
+        <Pressable
+          style={styles.addBtn}
+          onPress={() => {
+            addToCart({
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              image: item.image,
+              quantity: 1,
+              type: "grocery",
+            });
+
+            Toast.show({
+              type: "success",
+              text1: "Added to Cart 🛒",
+              text2: `${item.name} added successfully`,
+              position: "bottom",
+            });
+          }}
+        >
+          <Text style={{ color: "#fff" }}>ADD</Text>
+        </Pressable>
+      </View>
+    </View>
+  </View>
+)}
+
       />
     </View>
 
@@ -220,14 +222,22 @@ tabText: {
     paddingTop: 10,
     paddingBottom: 30,
   },
+  row: {
+  justifyContent: "space-between",
+  marginBottom: 14, // vertical gap between rows
+},
+
+cardWrapper: {
+  width: "48%", // 🔥 KEY FIX
+},
 
   /* CARD */
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
     overflow: "hidden",
-    flex: 1,
-    marginBottom: 500,
+    // flex: 1,
+    // marginBottom: 500,
     elevation: 2,
   },
   image: {

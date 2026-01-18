@@ -85,52 +85,55 @@ export default function ClothingSections() {
           keyExtractor={(item) => item.id}
           numColumns={2}
           contentContainerStyle={styles.list }
-          columnWrapperStyle={{ gap: 12 }}
+          columnWrapperStyle={ styles.row }
           renderItem={({ item }) => (
-  <Pressable
-    style={styles.card}
-    onPress={() =>
-      router.push({
-        pathname: "/product/[id]",
-        params: { id: item.id },
-      })
-    }
-  >
-    <Image source={{ uri: item.image }} style={styles.image} />
-              <View style={styles.cardBody}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.meta}>
-                  {item.section} • {item.category}
-                </Text>
-                <Text style={styles.price}>₹{item.price}</Text>
-              </View>
-              <View style={styles.cardBody}>
-    {/* ADD button stays same */}
-    <Pressable
-      style={styles.addBtn}
-      onPress={() => {
-        addToCart({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          image: item.image,
-          quantity: 1,
-          type: "clothing",
-        });
+            <View style={styles.cardWrapper}>
+              <Pressable
+                style={styles.card}
+                onPress={() =>
+                  router.push({
+                    pathname: "/product/[id]",
+                    params: { id: item.id },
+                  })
+                }
+              >
+                <Image source={{ uri: item.image }} style={styles.image} />
 
-        Toast.show({
-          type: "success",
-          text1: "Added to Cart 🛒",
-          text2: `${item.name} added successfully`,
-          position: "bottom",
-        });
-      }}
-    >
-      <Text style={{ color: "#fff" }}>ADD</Text>
-    </Pressable>
-    </View>
-  </Pressable>
-)}
+                <View style={styles.cardBody}>
+                  <Text style={styles.name}>{item.name}</Text>
+                  <Text style={styles.meta}>
+                    {item.section} • {item.category}
+                  </Text>
+                  <Text style={styles.price}>₹{item.price}</Text>
+                </View>
+
+                <View style={styles.cardBody}>
+                  <Pressable
+                    style={styles.addBtn}
+                    onPress={() => {
+                      addToCart({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        image: item.image,
+                        quantity: 1,
+                        type: "clothing",
+                      });
+
+                      Toast.show({
+                        type: "success",
+                        text1: "Added to Cart 🛒",
+                        text2: `${item.name} added successfully`,
+                        position: "bottom",
+                      });
+                    }}
+                  >
+                    <Text style={{ color: "#fff" }}>ADD</Text>
+                  </Pressable>
+                </View>
+              </Pressable>
+            </View>
+          )}
 
         />
       )}
@@ -174,9 +177,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 16,
      overflow: "hidden",
-     marginBottom: 500,
     elevation: 2,
-    flex: 1,
+    
   },
   cardBody: {
     padding: 12,
@@ -186,6 +188,14 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 30,
   },
+  row: {
+  justifyContent: "space-between",
+  marginBottom: 14,
+},
+
+cardWrapper: {
+  width: "48%", // 🔥 THIS FIXES THE GAP
+},
   image: { height: 120, width: "100%", },
   name: { fontSize: 14, fontWeight: "600",marginBottom: 4, },
   meta: { fontSize: 12, color: "#6b7280", marginTop: 2 },

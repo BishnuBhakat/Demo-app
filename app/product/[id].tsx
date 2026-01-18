@@ -71,16 +71,23 @@ export default function ProductDetails() {
         )}
 
         {/* ✅ MORE IN CATEGORY */}
+       
         <Pressable
           onPress={() =>
             router.push({
-              pathname: `./category/${type}/${categoryKey}`,
+              pathname: "/category/[type]/[category]",
+              params: {
+                type: isClothing ? "clothing" : "grocery",
+                category: String(product.category),
+              },
             })
           }
-          style={styles.moreBtn}
         >
-          <Text style={styles.moreText}>See more in this category →</Text>
+          <Text style={styles.linkText}>
+            See more in this category →
+          </Text>
         </Pressable>
+
 
         {/* ✅ ACTION BUTTONS */}
         <View style={styles.actionRow}>
@@ -155,7 +162,7 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 18,
   },
-
+  linkText: { color: "#2563eb", fontWeight: "900" },
   addBtn: {
     flex: 1,
     backgroundColor: "#2563eb",
