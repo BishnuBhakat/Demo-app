@@ -11,10 +11,13 @@ import { useMemo, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { groceryItems } from "../data/groceryData";
 import { clothingItems } from "../data/clothingData";
+import { electronicsItems } from "../data/electronicsData";
 
 type ItemAny =
   | ((typeof groceryItems)[number] & { type: "grocery" })
-  | ((typeof clothingItems)[number] & { type: "clothing" });
+  | ((typeof clothingItems)[number] & { type: "clothing" })
+  | ((typeof electronicsItems)[number] & { type: "electronics" });
+
 
 export default function GlobalSearch() {
   const router = useRouter();
@@ -26,7 +29,9 @@ export default function GlobalSearch() {
   const allItems: ItemAny[] = useMemo(() => {
     const g = (groceryItems ?? []).map((x) => ({ ...x, type: "grocery" as const }));
     const c = (clothingItems ?? []).map((x) => ({ ...x, type: "clothing" as const }));
-    return [...g, ...c];
+    const e = (electronicsItems ?? []).map((x) => ({ ...x, type: "electronics" as const }));
+
+    return [...g, ...c, ...e];
   }, []);
 
   const results = useMemo(() => {

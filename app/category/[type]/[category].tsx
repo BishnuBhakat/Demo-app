@@ -1,19 +1,31 @@
 import { View, Text, FlatList, Image, Pressable, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+
 import { groceryItems } from "../../data/groceryData";
 import { clothingItems } from "../../data/clothingData";
+import { electronicsItems } from "../../data/electronicsData";
 
 export default function CategoryPage() {
   const router = useRouter();
+
   const { type, category } = useLocalSearchParams<{
-    type: "grocery" | "clothing";
+    type: "grocery" | "clothing" | "electronics";
     category: string;
   }>();
 
+  // ✅ pick correct data source
+  const source =
+    type === "electronics"
+      ? electronicsItems
+      : type === "clothing"
+      ? clothingItems
+      : groceryItems;
+
+  // ✅ filter by category
   const items =
-    type === "grocery"
-      ? groceryItems.filter((i) => i.category === category)
-      : clothingItems.filter((i) => i.category === category);
+    category === "All"
+      ? source
+      : source.filter((i) => String(i.category) === String(category));
 
   return (
     <View style={styles.container}>
@@ -25,6 +37,11 @@ export default function CategoryPage() {
         numColumns={2}
         columnWrapperStyle={{ gap: 12 }}
         contentContainerStyle={{ padding: 12 }}
+        ListEmptyComponent={
+          <Text style={{ padding: 20, fontWeight: "700" }}>
+            No products found.
+          </Text>
+        }
         renderItem={({ item }) => (
           <Pressable
             style={styles.card}
