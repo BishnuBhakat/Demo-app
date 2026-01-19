@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { View, Text, Pressable, StyleSheet, FlatList, Image } from "react-native";
+import { View, Text, Pressable, StyleSheet, FlatList, Image,ScrollView } from "react-native";
 import HeaderNav from "../../components/HeaderNav";
 import { useCart } from "../context/CartContext";
 import { useHotelCart } from "../context/HotelCartContext";
@@ -58,9 +58,14 @@ export default function CartScreen() {
     <View style={styles.container}>
       <HeaderNav />
       <Text style={styles.title}>My Cart</Text>
+      
 
-      {/* Tabs */}
-      <View style={styles.tabRow}>
+     {/* Tabs */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tabRow}
+      >
         <TabButton
           label={`Clothing (${clothingCount})`}
           active={tab === "clothing"}
@@ -84,7 +89,7 @@ export default function CartScreen() {
           active={tab === "electronics"}
           onPress={() => setTab("electronics")}
         />
-      </View>
+      </ScrollView>
 
       {/* Cart list */}
       <FlatList
@@ -186,15 +191,20 @@ function TabButton({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: {  backgroundColor: "#fff" },
   title: { fontSize: 26, fontWeight: "900", padding: 12 },
 
-  tabRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderColor: "#e5e7eb",
-  },
-  tabBtn: { flex: 1, paddingVertical: 12, alignItems: "center" },
+tabRow: {
+  flexDirection: "row",
+  paddingHorizontal: 5,
+  borderBottomWidth: 1,
+  borderColor: "#e5e7eb",
+},
+  tabBtn: {
+  paddingHorizontal: 16,
+  paddingVertical: 12,
+  alignItems: "center",
+},
   tabText: { fontSize: 18, fontWeight: "700", color: "#111827" },
   tabTextActive: { color: "#2563eb" },
   activeLine: {

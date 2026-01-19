@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
@@ -7,6 +7,11 @@ export default function HeaderNav() {
 
   return (
     <SafeAreaView edges={["top"]} style={styles.safe}>
+        <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.tabs}
+            >
       <View style={styles.nav}>
         <Pressable onPress={() => router.push("/")} style={styles.item}>
           <Text style={styles.text}>Home</Text>
@@ -32,6 +37,7 @@ export default function HeaderNav() {
           <Text style={styles.text}>Hotels</Text>
         </Pressable>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -40,6 +46,12 @@ const styles = StyleSheet.create({
   safe: {
     backgroundColor: "#fff",
   },
+   tabs: { flexDirection: "row",
+     paddingHorizontal: 16, 
+      marginTop: 12,
+     marginBottom: 5,
+     gap: 15,
+     },
   nav: {
     flexDirection: "row",
     justifyContent: "space-around",

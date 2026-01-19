@@ -11,24 +11,9 @@ import {
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import HeaderNav from "../../components/HeaderNav";
-
-const OFFERS = [
-  "https://picsum.photos/400/160?1",
-  "https://picsum.photos/400/160?2",
-  "https://picsum.photos/400/160?3",
-];
-
-const TRENDING = [
-  { id: "t1", name: "Apple", price: 120, image: "https://picsum.photos/120?1" },
-  { id: "t2", name: "T-Shirt", price: 599, image: "https://picsum.photos/120?2" },
-  { id: "t3", name: "Shoes", price: 2499, image: "https://picsum.photos/120?3" },
-];
-
-const RANDOM_ITEMS = [
-  { id: "r1", name: "Milk", price: 60, image: "https://picsum.photos/120?4" },
-  { id: "r2", name: "Kurti", price: 899, image: "https://picsum.photos/120?5" },
-  { id: "r3", name: "Hotel Deal", price: 1999, image: "https://picsum.photos/120?6" },
-];
+import {OFFERS} from "../data/offersData";
+import {TRENDING} from "../data/trendingData";
+import {RANDOM_ITEMS} from "../data/randomItemsData";
 
 export default function Home() {
   const router = useRouter();
@@ -37,7 +22,12 @@ export default function Home() {
   const goExploreMore = () => router.push("./(tabs)/explore-more");
   const goTrending = () => router.push("./(tabs)/trending");
   const goTopDeals = () => router.push("./(tabs)/top-deals");
-
+  const goProduct = (id: string) => {
+    router.push({
+      pathname: "./product/[id]",
+      params: { id },
+    });
+  };
   const goGlobalSearch = () =>
     router.push({
       pathname: "./(tabs)/search",
@@ -82,53 +72,70 @@ export default function Home() {
         ))}
       </ScrollView>
 
-      {/* Trending for You (CLICKABLE) */}
-      <Pressable onPress={goTrending} style={styles.section}>
+      {/* Trending for You */}
+      <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Trending for You</Text>
-          <Text style={styles.viewAll}>View All</Text>
+
+          {/* ✅ View All button only */}
+          <Pressable onPress={goTrending}>
+            <Text style={styles.viewAll}>View All</Text>
+          </Pressable>
         </View>
 
         <FlatList
           data={TRENDING}
           horizontal
           showsHorizontalScrollIndicator={false}
-          keyExtractor={(i) => i.id}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingRight: 12 }}
           renderItem={({ item }) => (
-            <View style={styles.trendingCard}>
+            <Pressable
+              style={styles.trendingCard}
+              onPress={goTrending} 
+            >
               <Image source={{ uri: item.image }} style={styles.trendingImg} />
               <Text style={styles.itemName} numberOfLines={1}>
                 {item.name}
               </Text>
               <Text style={styles.itemPrice}>₹{item.price}</Text>
-            </View>
+            </Pressable>
           )}
         />
-      </Pressable>
+      </View>
+
 
       {/* Today's Top Deals (CLICKABLE) */}
-      <Pressable onPress={goTopDeals} style={styles.section}>
+       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Today{"'"}s Top Deals</Text>
-          <Text style={styles.viewAll}>View All</Text>
+          <Text style={styles.sectionTitle}>Top Deals</Text>
+
+          {/* ✅ View All button only */}
+          <Pressable onPress={goTopDeals}>
+            <Text style={styles.viewAll}>View All</Text>
+          </Pressable>
         </View>
 
         <FlatList
           data={TRENDING}
           horizontal
           showsHorizontalScrollIndicator={false}
-          keyExtractor={(i) => i.id}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingRight: 12 }}
           renderItem={({ item }) => (
-            <View style={styles.dealCard}>
-              <Image source={{ uri: item.image }} style={styles.dealImg} />
+            <Pressable
+              style={styles.trendingCard}
+               onPress={goTopDeals} // optional
+            >
+              <Image source={{ uri: item.image }} style={styles.trendingImg} />
               <Text style={styles.itemName} numberOfLines={1}>
                 {item.name}
               </Text>
               <Text style={styles.itemPrice}>₹{item.price}</Text>
-            </View>
+            </Pressable>
           )}
         />
-      </Pressable>
+      </View>
 
       {/* Explore More (FULL SECTION CLICKABLE) */}
       <Pressable onPress={goExploreMore} style={styles.section}>
@@ -155,6 +162,13 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
+  tabs: {
+    flexDirection: "row",
+    paddingHorizontal: 5,
+    marginTop: 5,
+    marginBottom: 5,
+    
+  },
 
   addressBox: {
     padding : 10,

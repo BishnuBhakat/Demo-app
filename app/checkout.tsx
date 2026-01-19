@@ -82,7 +82,7 @@ export default function Checkout() {
     // ✅ go to success page
     router.replace({
       pathname: "/order-success",
-      params: { cartType },
+      params: { cartType, amount: String(totalPrice), payment },
     });
   };
 

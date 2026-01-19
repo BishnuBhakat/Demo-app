@@ -11,10 +11,10 @@ import {
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 
-import HeaderNav from "../../components/HeaderNav";
-import { electronicsItems } from "../data/electronicsData";
-import { useCart } from "../context/CartContext";
-import { useWishlist } from "../context/WishlistContext";
+import HeaderNav from "../components/HeaderNav";
+import { electronicsItems } from "./data/electronicsData";
+import { useCart } from "./context/CartContext";
+import { useWishlist } from "./context/WishlistContext";
 
 const CATEGORIES = ["All", "Mobiles", "Television", "Laptops", "Accessories"];
 

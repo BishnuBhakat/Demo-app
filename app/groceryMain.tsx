@@ -55,35 +55,35 @@ export default function Grocery() {
       </View>
 
       {/* 🧩 CATEGORY TABS */}
-<ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  contentContainerStyle={styles.tabs}
->
-  {CATEGORIES.map((cat) => (
-    <Pressable
-      key={cat}
-      onPress={() => {
-        setSelectedCategory(cat);
-        setSearch("");
-      }}
-      style={[
-        styles.tab,
-        selectedCategory === cat && styles.activeTab,
-      ]}
-    >
-      <Text
-        numberOfLines={1}
-        style={[
-          styles.tabText,
-          selectedCategory === cat && styles.activeText,
-        ]}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tabs}
       >
-        {cat}
-      </Text>
-    </Pressable>
-  ))}
-</ScrollView>
+        {CATEGORIES.map((cat) => (
+          <Pressable
+            key={cat}
+            onPress={() => {
+              setSelectedCategory(cat);
+              setSearch("");
+            }}
+            style={[
+              styles.tab,
+              selectedCategory === cat && styles.activeTab,
+            ]}
+          >
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.tabText,
+                selectedCategory === cat && styles.activeText,
+              ]}
+            >
+              {cat}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
 
 
       {/* 🛒 PRODUCTS */}
