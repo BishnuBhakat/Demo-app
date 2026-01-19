@@ -11,30 +11,41 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import HeaderNav from "../components/HeaderNav";
 import { useCart } from "./context/CartContext";
+import Toast from "react-native-toast-message";
 
-type CartType = "clothing" | "grocery";
+type CartType = "clothing" | "grocery" | "electronics" | "jewellery";
 
 export default function Checkout() {
   const router = useRouter();
   const { cart, clearCart } = useCart();
   const params = useLocalSearchParams();
 
-  // ✅ cartType comes from cart page: router.push({ pathname:"/checkout", params:{ cartType: tab } })
+  /* ✅ SAFE cartType detection */
   const cartTypeParam = params.cartType;
   const cartType: CartType =
-    cartTypeParam === "grocery" || cartTypeParam === "clothing"
+    cartTypeParam === "clothing" ||
+    cartTypeParam === "grocery" ||
+    cartTypeParam === "electronics" ||
+    cartTypeParam === "jewellery"
       ? cartTypeParam
-      : "clothing"; // fallback
+      : "clothing";
 
-  // ✅ pick only the active cart items
+  /* ✅ PICK CORRECT CART ITEMS */
   const items = useMemo(() => {
-    return cartType === "clothing" ? cart.clothing : cart.grocery;
+    if (cartType === "clothing") return cart.clothing;
+    if (cartType === "grocery") return cart.grocery;
+    if (cartType === "electronics") return cart.electronics;
+    if (cartType === "jewellery") return cart.jewellery;
+    return [];
   }, [cartType, cart]);
 
-  const totalPrice = useMemo(() => {
-    return items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  }, [items]);
+  /* ✅ TOTAL */
+  const totalPrice = useMemo(
+    () => items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+    [items]
+  );
 
+  /* FORM STATE */
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [pincode, setPincode] = useState("");
@@ -43,6 +54,7 @@ export default function Checkout() {
   const [stateName, setStateName] = useState("");
   const [payment, setPayment] = useState<"COD" | "UPI" | "CARD">("COD");
 
+  /* ✅ PLACE ORDER */
   const placeOrder = () => {
     if (items.length === 0) {
       return Alert.alert("Cart", `No items in ${cartType} cart.`);
@@ -55,20 +67,23 @@ export default function Checkout() {
     if (!city.trim()) return Alert.alert("Missing", "Enter city");
     if (!stateName.trim()) return Alert.alert("Missing", "Enter state");
 
-    Alert.alert(
-      "✅ Order Placed",
-      `Section: ${cartType.toUpperCase()}\nPayment: ${payment}\nAmount: ₹${totalPrice}`,
-      [
-        {
-          text: "OK",
-          onPress: () => {
-            // ✅ clear only current cart
-            clearCart(cartType);
-            router.replace("/account");
-          },
-        },
-      ]
-    );
+    // ✅ UPI / CARD → toast only
+    if (payment !== "COD") {
+      Toast.show({
+        type: "success",
+        text1: "Payment Successful",
+        position: "bottom",
+      });
+    }
+
+    // ✅ clear correct cart
+    clearCart(cartType);
+
+    // ✅ go to success page
+    router.replace({
+      pathname: "/order-success",
+      params: { cartType },
+    });
   };
 
   return (
@@ -76,25 +91,21 @@ export default function Checkout() {
       <HeaderNav />
 
       <ScrollView contentContainerStyle={{ padding: 12, paddingBottom: 30 }}>
-        <Text style={styles.pageTitle}>Checkout - {cartType.toUpperCase()}</Text>
+        <Text style={styles.pageTitle}>
+          Checkout - {cartType.toUpperCase()}
+        </Text>
 
         <Text style={styles.title}>Delivery Address</Text>
 
         <View style={styles.card}>
           <Text style={styles.label}>Full Name</Text>
-          <TextInput
-            value={name}
-            onChangeText={setName}
-            style={styles.input}
-            placeholder="Enter your name"
-          />
+          <TextInput value={name} onChangeText={setName} style={styles.input} />
 
           <Text style={styles.label}>Phone</Text>
           <TextInput
             value={phone}
             onChangeText={setPhone}
             style={styles.input}
-            placeholder="10-digit number"
             keyboardType="phone-pad"
           />
 
@@ -105,7 +116,6 @@ export default function Checkout() {
                 value={pincode}
                 onChangeText={setPincode}
                 style={styles.input}
-                placeholder="6 digits"
                 keyboardType="number-pad"
               />
             </View>
@@ -114,12 +124,7 @@ export default function Checkout() {
 
             <View style={{ flex: 1 }}>
               <Text style={styles.label}>City</Text>
-              <TextInput
-                value={city}
-                onChangeText={setCity}
-                style={styles.input}
-                placeholder="City"
-              />
+              <TextInput value={city} onChangeText={setCity} style={styles.input} />
             </View>
           </View>
 
@@ -128,15 +133,13 @@ export default function Checkout() {
             value={stateName}
             onChangeText={setStateName}
             style={styles.input}
-            placeholder="State"
           />
 
           <Text style={styles.label}>Full Address</Text>
           <TextInput
             value={address}
             onChangeText={setAddress}
-            style={[styles.input, { height: 90, textAlignVertical: "top" }]}
-            placeholder="House no, Street, Area..."
+            style={[styles.input, { height: 90 }]}
             multiline
           />
         </View>
@@ -150,15 +153,15 @@ export default function Checkout() {
               style={[styles.payOption, payment === p && styles.payActive]}
             >
               <Text style={[styles.payText, payment === p && styles.payTextActive]}>
-                {p === "COD" ? "Cash on Delivery" : p === "UPI" ? "UPI" : "Card"}
+                {p === "COD" ? "Cash on Delivery" : p}
               </Text>
             </Pressable>
           ))}
         </View>
 
         <View style={styles.summary}>
-          <Text style={{ color: "#6b7280", fontWeight: "700" }}>Total Amount</Text>
-          <Text style={{ fontSize: 20, fontWeight: "900" }}>₹{totalPrice}</Text>
+          <Text>Total Amount</Text>
+          <Text style={{ fontWeight: "900" }}>₹{totalPrice}</Text>
         </View>
 
         <Pressable style={styles.placeBtn} onPress={placeOrder}>
@@ -172,41 +175,31 @@ export default function Checkout() {
 }
 
 const styles = StyleSheet.create({
-  pageTitle: { fontSize: 20, fontWeight: "900", marginTop: 10, marginBottom: 10 },
-
-  title: { fontSize: 18, fontWeight: "900", marginTop: 8, marginBottom: 8 },
+  pageTitle: { fontSize: 20, fontWeight: "900", marginBottom: 10 },
+  title: { fontSize: 18, fontWeight: "900", marginVertical: 8 },
   card: { backgroundColor: "#fff", borderRadius: 14, padding: 12, marginBottom: 10 },
-  label: { fontSize: 12, color: "#6b7280", fontWeight: "800", marginTop: 10, marginBottom: 6 },
-  input: { backgroundColor: "#f9fafb", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 },
+  label: { fontSize: 12, fontWeight: "800", marginTop: 10 },
+  input: { backgroundColor: "#f9fafb", borderRadius: 12, padding: 10 },
   row: { flexDirection: "row" },
 
-  payOption: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    backgroundColor: "#f3f4f6",
-    marginBottom: 10,
-  },
+  payOption: { padding: 12, borderRadius: 12, backgroundColor: "#f3f4f6", marginBottom: 8 },
   payActive: { backgroundColor: "#2563eb" },
-  payText: { fontWeight: "800", color: "#111827" },
+  payText: { fontWeight: "800" },
   payTextActive: { color: "#fff" },
 
   summary: {
     backgroundColor: "#fff",
     borderRadius: 14,
     padding: 14,
-    marginTop: 6,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
   },
-
   placeBtn: {
     backgroundColor: "#fb923c",
-    paddingVertical: 14,
+    padding: 14,
     borderRadius: 14,
     alignItems: "center",
     marginTop: 12,
   },
-  placeText: { color: "#fff", fontWeight: "900", fontSize: 16 },
+  placeText: { color: "#fff", fontWeight: "900" },
 });

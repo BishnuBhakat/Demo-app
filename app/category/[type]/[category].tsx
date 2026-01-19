@@ -1,24 +1,36 @@
 import { View, Text, FlatList, Image, Pressable, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+
 import { groceryItems } from "../../data/groceryData";
 import { clothingItems } from "../../data/clothingData";
 import { jewelleryItems } from "../../data/jewelleryData";
-
+import { electronicsItems } from "../../data/electronicsData";
 
 export default function CategoryPage() {
   const router = useRouter();
+
   const { type, category } = useLocalSearchParams<{
-    type: "grocery" | "clothing" | "jewellery";
+    type: "grocery" | "clothing" | "jewellery" | "electronics";
     category: string;
   }>();
 
-  const items =
-  type === "grocery"
-    ? groceryItems.filter((i) => String(i.category) === String(category))
-    : type === "clothing"
-    ? clothingItems.filter((i) => String(i.category) === String(category))
-    : jewelleryItems.filter((i) => String(i.category) === String(category));
+  // ✅ pick correct source (NO logic change, just merged)
+  const source =
+    type === "electronics"
+      ? electronicsItems
+      : type === "jewellery"
+      ? jewelleryItems
+      : type === "clothing"
+      ? clothingItems
+      : groceryItems;
 
+  // ✅ filter by category (handles "All" safely)
+  const items =
+    category === "All"
+      ? source
+      : source.filter(
+          (i) => String(i.category) === String(category)
+        );
 
   return (
     <View style={styles.container}>
@@ -30,6 +42,11 @@ export default function CategoryPage() {
         numColumns={2}
         columnWrapperStyle={{ gap: 12 }}
         contentContainerStyle={{ padding: 12 }}
+        ListEmptyComponent={
+          <Text style={{ padding: 20, fontWeight: "700" }}>
+            No products found.
+          </Text>
+        }
         renderItem={({ item }) => (
           <Pressable
             style={styles.card}

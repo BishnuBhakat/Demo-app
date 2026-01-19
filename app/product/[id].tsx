@@ -3,7 +3,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { groceryItems } from "../data/groceryData";
 import { clothingItems } from "../data/clothingData";
-import { jewelleryItems } from "../data/jewelleryData"; // ✅ add this
+import { jewelleryItems } from "../data/jewelleryData";
+import { electronicsItems } from "../data/electronicsData";
 
 import { useCart } from "../context/CartContext";
 import Toast from "react-native-toast-message";
@@ -23,10 +24,14 @@ export default function ProductDetails() {
       ? params.id[0]
       : "";
 
-  // ✅ combine all products (NOW includes jewellery)
-  const allProducts = [...groceryItems, ...clothingItems, ...jewelleryItems];
+  // ✅ combine ALL products
+  const allProducts = [
+    ...groceryItems,
+    ...clothingItems,
+    ...jewelleryItems,
+    ...electronicsItems,
+  ];
 
-  // ✅ find product safely
   const product = allProducts.find((p) => p.id === id);
 
   if (!product) {
@@ -37,28 +42,43 @@ export default function ProductDetails() {
     );
   }
 
-  const isClothing = clothingItems.some((c) => c.id === product.id);
-  const isJewellery = jewelleryItems.some((j) => j.id === product.id);
+  // ✅ detect product type
+  const isClothing = clothingItems.some((x) => x.id === product.id);
+  const isJewellery = jewelleryItems.some((x) => x.id === product.id);
+  const isElectronics = electronicsItems.some((x) => x.id === product.id);
 
-  const type: "grocery" | "clothing" | "jewellery" = isJewellery
-    ? "jewellery"
-    : isClothing
-    ? "clothing"
-    : "grocery";
+  const type: "grocery" | "clothing" | "jewellery" | "electronics" =
+    isClothing
+      ? "clothing"
+      : isJewellery
+      ? "jewellery"
+      : isElectronics
+      ? "electronics"
+      : "grocery";
 
-  // ✅ category key for "more in this category"
-  const categoryKey =
-    "category" in product && product.category ? String(product.category) : "All";
-
+  // ✅ back routing
   const backRoute =
     type === "clothing"
       ? "/clothingMain"
       : type === "jewellery"
       ? "/jewelleryMain"
+      : type === "electronics"
+      ? "/electronicsMain"
       : "/groceryMain";
 
   const backLabel =
-    type === "clothing" ? "Clothing" : type === "jewellery" ? "Jewellery" : "Grocery";
+    type === "clothing"
+      ? "Clothing"
+      : type === "jewellery"
+      ? "Jewellery"
+      : type === "electronics"
+      ? "Electronics"
+      : "Grocery";
+
+  const categoryKey =
+    "category" in product && product.category
+      ? String(product.category)
+      : "All";
 
   return (
     <View style={styles.container}>
@@ -74,34 +94,30 @@ export default function ProductDetails() {
         <Text style={styles.name}>{product.name}</Text>
         <Text style={styles.price}>₹{product.price}</Text>
 
-        {/* ✅ Description */}
+        {/* DESCRIPTION */}
         {"description" in product && product.description ? (
           <Text style={styles.desc}>{product.description}</Text>
         ) : (
           <Text style={styles.desc}>
-            Premium quality {type === "clothing" ? "clothing" : type === "jewellery" ? "jewellery" : "product"} with
-            great comfort and style.
+            Premium quality {type} product with great comfort and style.
           </Text>
         )}
 
-        {/* ✅ MORE IN CATEGORY */}
+        {/* SEE MORE */}
         <Pressable
           onPress={() =>
             router.push({
               pathname: "/category/[type]/[category]",
-              params: {
-                type, // ✅ grocery | clothing | jewellery
-                category: categoryKey,
-              },
+              params: { type, category: categoryKey },
             })
           }
         >
           <Text style={styles.linkText}>See more in this category →</Text>
         </Pressable>
 
-        {/* ✅ ACTION BUTTONS */}
+        {/* ACTIONS */}
         <View style={styles.actionRow}>
-          {/* 🛒 ADD TO CART */}
+          {/* ADD TO CART */}
           <Pressable
             style={styles.addBtn}
             onPress={() => {
@@ -111,7 +127,7 @@ export default function ProductDetails() {
                 price: product.price,
                 image: product.image,
                 quantity: 1,
-                type, // ✅ now includes jewellery
+                type, // ✅ correct bucket always
               });
 
               Toast.show({
@@ -125,17 +141,14 @@ export default function ProductDetails() {
             <Text style={styles.addText}>ADD TO CART</Text>
           </Pressable>
 
-          {/* ❤️ WISHLIST */}
+          {/* WISHLIST */}
           <Pressable
             style={styles.wishlistBtn}
             onPress={() => {
-              // ✅ store type in wishlist items (very important)
-              toggleLike({ ...product, type });
-
+              toggleLike({ ...product, type }); // ✅ preserve type
               Toast.show({
                 type: "success",
                 text1: "Added to Wishlist ❤️",
-                text2: `${product.name} saved`,
                 position: "bottom",
               });
             }}
@@ -144,7 +157,7 @@ export default function ProductDetails() {
           </Pressable>
         </View>
 
-        {/* ✅ GO TO CART */}
+        {/* GO TO CART */}
         <Pressable onPress={() => router.push("/cart")} style={styles.goCartBtn}>
           <Text style={styles.goCartText}>🛒 Go to Cart</Text>
         </Pressable>
@@ -161,12 +174,14 @@ const styles = StyleSheet.create({
 
   image: { width: "100%", height: 320 },
   body: { padding: 16 },
+
   name: { fontSize: 22, fontWeight: "800" },
   price: { fontSize: 18, fontWeight: "900", marginVertical: 6 },
+
   desc: { color: "#6b7280", lineHeight: 20, marginVertical: 12 },
+  linkText: { color: "#2563eb", fontWeight: "900" },
 
   actionRow: { flexDirection: "row", gap: 12, marginTop: 18 },
-  linkText: { color: "#2563eb", fontWeight: "900" },
 
   addBtn: {
     flex: 1,
@@ -179,19 +194,18 @@ const styles = StyleSheet.create({
 
   wishlistBtn: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#2563eb",
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
-    justifyContent: "center",
   },
   wishlistText: { color: "#2563eb", fontWeight: "900", fontSize: 15 },
 
   goCartBtn: { marginTop: 16, alignItems: "center" },
   goCartText: { fontSize: 15, fontWeight: "800", color: "#2563eb" },
 
-  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
   notFound: { fontSize: 18, fontWeight: "600", color: "#6b7280" },
 });

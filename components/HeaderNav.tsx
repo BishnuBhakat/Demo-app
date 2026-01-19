@@ -1,5 +1,4 @@
-
-import { View, Text, StyleSheet, Pressable, Platform, StatusBar } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
@@ -21,13 +20,17 @@ export default function HeaderNav() {
           <Text style={styles.text}>Grocery</Text>
         </Pressable>
 
-        <Pressable onPress={() => router.push("/hotelsMain")} style={styles.item}>
-          <Text style={styles.text}>Hotels</Text>
+        <Pressable onPress={() => router.push("/electronicsMain")} style={styles.item}>
+          <Text style={styles.text}>Electronics</Text>
         </Pressable>
-        <Pressable onPress={() => router.push("./jewelleryMain")} style={styles.item}>
+
+        <Pressable onPress={() => router.push("/jewelleryMain")} style={styles.item}>
           <Text style={styles.text}>Jewellery</Text>
         </Pressable>
 
+        <Pressable onPress={() => router.push("/hotelsMain")} style={styles.item}>
+          <Text style={styles.text}>Hotels</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -40,7 +43,7 @@ const styles = StyleSheet.create({
   nav: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingVertical: 10, // 👈 pushes nav DOWN
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderColor: "#e5e7eb",
   },
@@ -53,4 +56,3 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
-

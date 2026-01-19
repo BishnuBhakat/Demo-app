@@ -9,17 +9,18 @@ import {
 } from "react-native";
 import { useMemo, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
+
 import { groceryItems } from "../data/groceryData";
 import { clothingItems } from "../data/clothingData";
 import { jewelleryItems } from "../data/jewelleryData";
-
-
-
+import { electronicsItems } from "../data/electronicsData";
 
 type ItemAny =
   | ((typeof groceryItems)[number] & { type: "grocery" })
   | ((typeof clothingItems)[number] & { type: "clothing" })
-  | ((typeof jewelleryItems)[number] & { type: "jewellery" });
+  | ((typeof jewelleryItems)[number] & { type: "jewellery" })
+  | ((typeof electronicsItems)[number] & { type: "electronics" });
+
 export default function GlobalSearch() {
   const router = useRouter();
   const params = useLocalSearchParams();
@@ -27,14 +28,17 @@ export default function GlobalSearch() {
   const initial = typeof params.q === "string" ? params.q : "";
   const [q, setQ] = useState(initial);
 
+  // ✅ MERGED all items
   const allItems: ItemAny[] = useMemo(() => {
     const g = (groceryItems ?? []).map((x) => ({ ...x, type: "grocery" as const }));
     const c = (clothingItems ?? []).map((x) => ({ ...x, type: "clothing" as const }));
     const j = (jewelleryItems ?? []).map((x) => ({ ...x, type: "jewellery" as const }));
+    const e = (electronicsItems ?? []).map((x) => ({ ...x, type: "electronics" as const }));
 
-    return [...g, ...c,...j];
+    return [...g, ...c, ...j, ...e];
   }, []);
 
+  // ✅ SEARCH LOGIC (unchanged)
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return allItems;
@@ -74,24 +78,22 @@ export default function GlobalSearch() {
             onPress={() =>
               router.push({
                 pathname: "/product/[id]",
-                params: { id: item.id }, // your product page already finds from both arrays
+                params: { id: item.id },
               })
             }
           >
             <Image source={{ uri: item.image }} style={styles.img} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
+              <Text style={styles.name} numberOfLines={1}>
+                {item.name}
+              </Text>
               <Text style={styles.price}>₹{item.price}</Text>
 
-              {"category" in item && item.category ? (
-                <Text style={styles.meta} numberOfLines={1}>
-                  {String(item.category)} • {item.type.toUpperCase()}
-                </Text>
-              ) : (
-                <Text style={styles.meta} numberOfLines={1}>
-                  {item.type.toUpperCase()}
-                </Text>
-              )}
+              <Text style={styles.meta} numberOfLines={1}>
+                {"category" in item && item.category
+                  ? `${String(item.category)} • ${item.type.toUpperCase()}`
+                  : item.type.toUpperCase()}
+              </Text>
             </View>
           </Pressable>
         )}

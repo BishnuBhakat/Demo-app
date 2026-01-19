@@ -1,53 +1,58 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, Pressable, StyleSheet, FlatList, Image } from "react-native";
 import HeaderNav from "../../components/HeaderNav";
-import { useCart } from "../context/CartContext"; // ✅ adjust path if needed
-import { useHotelCart } from "../context/HotelCartContext"; // ✅ if you have this hook
+import { useCart } from "../context/CartContext";
+import { useHotelCart } from "../context/HotelCartContext";
 import { useRouter } from "expo-router";
 
-
-type TabKey = "clothing" | "grocery" | "jewellery" | "hotels";
+type TabKey = "clothing" | "grocery" | "jewellery" | "electronics" | "hotels";
 
 export default function CartScreen() {
   const [tab, setTab] = useState<TabKey>("clothing");
   const router = useRouter();
 
   const {
-  cart,
-  increaseQty,
-  decreaseQty,
-  removeFromCart,
-  clothingTotal,
-  groceryTotal,
-  jewelleryTotal,
-  clothingCount,
-  groceryCount,
-  jewelleryCount,
-} = useCart();
-;
+    cart,
+    increaseQty,
+    decreaseQty,
+    removeFromCart,
 
-  // Hotels cart (Minutes tab)
+    clothingTotal,
+    groceryTotal,
+    jewelleryTotal,
+    electronicsTotal,
+
+    clothingCount,
+    groceryCount,
+    jewelleryCount,
+    electronicsCount,
+  } = useCart();
+
+  // Hotels (optional)
   const hotel = useHotelCart?.() as any;
   const hotelItems = hotel?.cart ?? [];
-  const hotelCount = hotel?.totalItems ?? hotelItems?.length ?? 0;
   const hotelTotal = hotel?.totalPrice ?? 0;
 
+  // ✅ Active items
   const activeItems = useMemo(() => {
-  if (tab === "clothing") return cart.clothing;
-  if (tab === "grocery") return cart.grocery;
-  if (tab === "jewellery") return cart.jewellery;
-  return hotelItems;
-}, [tab, cart, hotelItems]);
+    if (tab === "clothing") return cart.clothing;
+    if (tab === "grocery") return cart.grocery;
+    if (tab === "jewellery") return cart.jewellery;
+    if (tab === "electronics") return cart.electronics;
+    return hotelItems;
+  }, [tab, cart, hotelItems]);
 
-
+  // ✅ Active total
   const activeTotal =
-  tab === "clothing"
-    ? clothingTotal
-    : tab === "grocery"
-    ? groceryTotal
-    : tab === "jewellery"
-    ? jewelleryTotal
-    : hotelTotal;
+    tab === "clothing"
+      ? clothingTotal
+      : tab === "grocery"
+      ? groceryTotal
+      : tab === "jewellery"
+      ? jewelleryTotal
+      : tab === "electronics"
+      ? electronicsTotal
+      : hotelTotal;
 
   return (
     <View style={styles.container}>
@@ -61,26 +66,34 @@ export default function CartScreen() {
           active={tab === "clothing"}
           onPress={() => setTab("clothing")}
         />
+
         <TabButton
           label={`Grocery (${groceryCount})`}
           active={tab === "grocery"}
           onPress={() => setTab("grocery")}
         />
+
         <TabButton
-        label={`Jewellery (${jewelleryCount})`}
-        active={tab === "jewellery"}
-        onPress={() => setTab("jewellery")}
-      />
+          label={`Jewellery (${jewelleryCount})`}
+          active={tab === "jewellery"}
+          onPress={() => setTab("jewellery")}
+        />
+
+        <TabButton
+          label={`Electronics (${electronicsCount})`}
+          active={tab === "electronics"}
+          onPress={() => setTab("electronics")}
+        />
       </View>
-      
 
-
-      {/* List */}
+      {/* Cart list */}
       <FlatList
         data={activeItems}
         keyExtractor={(item: any) => `${tab}:${item.id}`}
         contentContainerStyle={{ padding: 12, paddingBottom: 110 }}
-        ListEmptyComponent={<Text style={{ padding: 20 }}>No items in this cart.</Text>}
+        ListEmptyComponent={
+          <Text style={{ padding: 20 }}>No items in this cart.</Text>
+        }
         renderItem={({ item }: any) => (
           <View style={styles.card}>
             <Image
@@ -94,16 +107,22 @@ export default function CartScreen() {
               </Text>
               <Text style={styles.meta}>₹{item.price}</Text>
 
-              {/* Qty controls for grocery/clothing only */}
+              {/* Qty controls */}
               {tab !== "hotels" && (
                 <View style={styles.qtyRow}>
-                  <Pressable style={styles.qtyBtn} onPress={() => decreaseQty(item.id, tab)}>
+                  <Pressable
+                    style={styles.qtyBtn}
+                    onPress={() => decreaseQty(item.id, tab)}
+                  >
                     <Text style={styles.qtyText}>−</Text>
                   </Pressable>
 
                   <Text style={styles.qtyNum}>{item.quantity}</Text>
 
-                  <Pressable style={styles.qtyBtn} onPress={() => increaseQty(item.id, tab)}>
+                  <Pressable
+                    style={styles.qtyBtn}
+                    onPress={() => increaseQty(item.id, tab)}
+                  >
                     <Text style={styles.qtyText}>+</Text>
                   </Pressable>
 
@@ -111,7 +130,9 @@ export default function CartScreen() {
                     onPress={() => removeFromCart(item.id, tab)}
                     style={{ marginLeft: "auto" }}
                   >
-                    <Text style={{ color: "#ef4444", fontWeight: "900" }}>REMOVE</Text>
+                    <Text style={{ color: "#ef4444", fontWeight: "900" }}>
+                      REMOVE
+                    </Text>
                   </Pressable>
                 </View>
               )}
@@ -120,7 +141,7 @@ export default function CartScreen() {
         )}
       />
 
-      {/* Sticky footer */}
+      {/* Footer */}
       <View style={styles.footer}>
         <View>
           <Text style={styles.totalLabel}>Total Amount</Text>
@@ -129,14 +150,12 @@ export default function CartScreen() {
 
         <Pressable
           style={styles.placeBtn}
-          onPress={() => {
-            // ✅ Open your previous checkout form
-            // Your form file is: app/checkout.tsx
+          onPress={() =>
             router.push({
               pathname: "/checkout",
-              params: { cartType: tab }, // "clothing" | "grocery" (hotels if you enable later)
-            });
-          }}
+              params: { cartType: tab },
+            })
+          }
         >
           <Text style={styles.placeText}>
             {tab === "hotels" ? "BOOK NOW" : "PLACE ORDER"}
@@ -158,7 +177,9 @@ function TabButton({
 }) {
   return (
     <Pressable onPress={onPress} style={styles.tabBtn}>
-      <Text style={[styles.tabText, active && styles.tabTextActive]}>{label}</Text>
+      <Text style={[styles.tabText, active && styles.tabTextActive]}>
+        {label}
+      </Text>
       {active && <View style={styles.activeLine} />}
     </Pressable>
   );
@@ -193,12 +214,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#f3f4f6",
   },
-  image: { width: 90, height: 90, borderRadius: 12, backgroundColor: "#e5e7eb" },
+  image: {
+    width: 90,
+    height: 90,
+    borderRadius: 12,
+    backgroundColor: "#e5e7eb",
+  },
   name: { fontSize: 16, fontWeight: "800" },
   meta: { marginTop: 4, color: "#6b7280", fontWeight: "700" },
 
   qtyRow: { flexDirection: "row", alignItems: "center", marginTop: 10, gap: 10 },
-  qtyBtn: { backgroundColor: "#e5e7eb", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
+  qtyBtn: {
+    backgroundColor: "#e5e7eb",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
   qtyText: { fontSize: 18, fontWeight: "900" },
   qtyNum: { fontWeight: "900" },
 
@@ -218,6 +249,11 @@ const styles = StyleSheet.create({
   totalLabel: { color: "#6b7280", fontWeight: "700" },
   totalValue: { fontSize: 18, fontWeight: "900", marginTop: 2 },
 
-  placeBtn: { backgroundColor: "#fb923c", paddingHorizontal: 18, paddingVertical: 12, borderRadius: 12 },
+  placeBtn: {
+    backgroundColor: "#fb923c",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
   placeText: { color: "#fff", fontWeight: "900" },
 });

@@ -1,0 +1,35 @@
+export const electronicsItems = [
+  {
+    id: "e1",
+    name: "iPhone 14",
+    price: 69999,
+    image: "https://picsum.photos/300?e1",
+    category: "Mobiles",
+    section: "Smartphones",
+    description: "Apple iPhone with A15 Bionic chip",
+  },
+  {
+    id: "e2",
+    name: "Samsung Smart TV",
+    price: 45999,
+    image: "https://picsum.photos/300?e2",
+    category: "Television",
+    section: "LED TV",
+  },
+  {
+    id: "e3",
+    name: "HP Laptop",
+    price: 55999,
+    image: "https://picsum.photos/300?e3",
+    category: "Laptops",
+    section: "Computers",
+  },
+  {
+    id: "e4",
+    name: "Sony Headphones",
+    price: 2999,
+    image: "https://picsum.photos/300?e4",
+    category: "Accessories",
+    section: "Audio",
+  },
+];

@@ -33,6 +33,12 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="electronicsMain"
+        options={{
+          href: null, // ✅ hides it from the bottom tab bar
+        }}
+      />
 <Tabs.Screen
   name="explore-more"
   options={{

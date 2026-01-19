@@ -127,7 +127,7 @@ export default function JewelleryMain() {
                         price: item.price,
                         image: item.image,
                         quantity: 1,
-                        type: "clothing", // ✅ IMPORTANT NOTE (see below)
+                        type: "jewellery", // ✅ IMPORTANT NOTE (see below)
                       });
 
                       Toast.show({
