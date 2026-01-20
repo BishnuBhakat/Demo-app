@@ -149,6 +149,7 @@ export default function ProductDetails() {
               Toast.show({
                 type: "success",
                 text1: "Added to Wishlist ❤️",
+                text2: `${product.name} Added to Wishlist ❤️`,
                 position: "bottom",
               });
             }}

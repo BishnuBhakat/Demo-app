@@ -138,7 +138,7 @@ export default function JewelleryMain() {
                       });
                     }}
                   >
-                    <Text style={{ color: "#fff", fontWeight: "900" }}>ADD</Text>
+                    <Text style={{ color: "#fff", fontWeight: "900" }}>ADD TO CART</Text>
                   </Pressable>
                 </View>
               </Pressable>
@@ -152,24 +152,24 @@ export default function JewelleryMain() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
-  header: { padding: 12 },
+  header: { padding: 16 },
   title: { fontSize: 22, fontWeight: "900" },
 
-  categoryRow: { paddingHorizontal: 12, paddingVertical: 10, gap: 12 },
+  categoryRow: { paddingHorizontal: 12, paddingVertical: 18, gap: 15 },
   categoryPill: {
-    minWidth: 90,
     height: 44,
-    borderRadius: 22,
+    borderRadius: 90,
     backgroundColor: "#e5e7eb",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 16,
+    paddingVertical: 12,
   },
-  categoryActive: { backgroundColor: "#16a34a" },
+  categoryActive: { backgroundColor: "#676538ff" },
   categoryText: { fontWeight: "700", color: "#111827" },
   categoryTextActive: { color: "#fff" },
 
-  list: { paddingHorizontal: 12, paddingBottom: 100 },
+  list: { paddingHorizontal: 16, paddingBottom: 30 , paddingTop: 10},
   row: { justifyContent: "space-between", marginBottom: 14 },
 
   cardWrapper: { width: "48%" },
@@ -178,9 +178,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 12,
     elevation: 2,
-    position: "relative",
+    overflow: "hidden",
+    
   },
-  image: { width: "100%", height: 160, borderRadius: 12 },
+  image: { width: "100%", height: 110, borderRadius: 12 },
   cardBody: { marginTop: 8 },
   name: { fontWeight: "800" },
   meta: { marginTop: 4, color: "#6b7280", fontWeight: "700", fontSize: 12 },
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
 
   addBtn: {
     marginTop: 6,
-    backgroundColor: "#2563eb",
+    backgroundColor: "#676538ff",
     paddingVertical: 10,
     borderRadius: 12,
     alignItems: "center",
@@ -206,6 +207,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  heartBtn: { position: "absolute", top: 10, right: 10 },
-  heartText: { fontSize: 18 },
+   heartBtn: {
+  position: "absolute",
+  top: 8,
+  right: 8,
+  backgroundColor: "#ffffffee",
+  borderRadius: 20,
+  width: 34,
+  height: 34,
+  alignItems: "center",
+  justifyContent: "center",
+  elevation: 3, // Android shadow
+  shadowColor: "#000", // iOS shadow
+  shadowOpacity: 0.2,
+  shadowRadius: 4,
+},
+heartText: {
+  fontSize: 16,
+},
 });

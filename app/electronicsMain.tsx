@@ -47,8 +47,8 @@ export default function ElectronicsMain() {
   return (
     <View style={styles.container}>
       <HeaderNav />
-
-      <Text style={styles.title}>Electronics</Text>
+      <View style={styles.header}></View>
+      <Text style={styles.title}>Electronics Store</Text>
 
       {/* 🔍 SEARCH BAR */}
       <View style={styles.searchWrap}>
@@ -85,6 +85,9 @@ export default function ElectronicsMain() {
       />
 
       {/* 📦 PRODUCTS */}
+       {filteredItems.length === 0 ? (
+          <Text style={{ padding: 20 }}>No items found</Text>
+        ) : (
       <FlatList
         data={filteredItems}
         keyExtractor={(item) => item.id}
@@ -119,13 +122,18 @@ export default function ElectronicsMain() {
                 style={styles.heartBtn}
                 onPress={() => {
                   toggleLike({ ...item, type: "electronics" as any });
-                  Toast.show({ type: "success", text1: "Added to Wishlist ❤️" });
+                  Toast.show({ type: "success",
+                     text1: "Added to Wishlist ❤️" , 
+                     text2: `${item.name} Added to Wishlist ❤️` ,
+                     position: "bottom",
+                    });
                 }}
               >
                 <Text style={styles.heartText}>❤️</Text>
               </Pressable>
 
               {/* 🛒 ADD */}
+               <View style={styles.cardBody}>
               <Pressable
                 style={styles.addBtn}
                 onPress={() => {
@@ -137,15 +145,17 @@ export default function ElectronicsMain() {
                     quantity: 1,
                     type: "electronics" as any,
                   });
-                  Toast.show({ type: "success", text1: "Added to Cart 🛒" });
+                  Toast.show({ type: "success", text1: "Added to Cart 🛒", text2: `${item.name} added successfully` });
                 }}
               >
                 <Text style={{ color: "#fff", fontWeight: "900" }}>ADD</Text>
               </Pressable>
+              </View>
             </Pressable>
           </View>
         )}
       />
+        )}
     </View>
   );
 }
@@ -153,6 +163,7 @@ export default function ElectronicsMain() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
+    header: { padding: 16 },
   title: { fontSize: 22, fontWeight: "900", padding: 12 },
 
   searchWrap: {
@@ -178,7 +189,7 @@ search: {
     justifyContent: "center",
     paddingHorizontal: 16,
   },
-  categoryActive: { backgroundColor: "#2563eb" },
+  categoryActive: { backgroundColor: "#5b5555ff" },
   categoryText: { fontWeight: "700" },
   categoryTextActive: { color: "#fff" },
 
@@ -201,12 +212,26 @@ search: {
 
   addBtn: {
     marginTop: 6,
-    backgroundColor: "#2563eb",
+    backgroundColor: "#5b5555ff",
     paddingVertical: 10,
     borderRadius: 12,
     alignItems: "center",
   },
 
-  heartBtn: { position: "absolute", top: 10, right: 10 },
+   heartBtn: {
+  position: "absolute",
+  top: 8,
+  right: 8,
+  backgroundColor: "#ffffffee",
+  borderRadius: 20,
+  width: 34,
+  height: 34,
+  alignItems: "center",
+  justifyContent: "center",
+  elevation: 3, // Android shadow
+  shadowColor: "#000", // iOS shadow
+  shadowOpacity: 0.2,
+  shadowRadius: 4,
+},
   heartText: { fontSize: 18 },
 });
