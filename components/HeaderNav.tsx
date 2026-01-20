@@ -1,42 +1,50 @@
+
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { Href, useRouter, usePathname } from "expo-router";
 
 export default function HeaderNav() {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const Item = ({
+    label,
+    icon,
+    route,
+  }: {
+    label: string;
+    icon: string;
+    route: Href;
+  }) => {
+    const active = pathname === route;
+
+    return (
+      <Pressable onPress={() => router.push(route)} style={styles.item}>
+        {/* ICON WRAPPER */}
+        <View style={[styles.iconWrap, active && styles.activeIconWrap]}>
+          <Text style={[styles.icon, active && styles.activeIcon]}>
+            {icon}
+          </Text>
+        </View>
+
+        <Text style={[styles.label, active && styles.activeLabel]}>
+          {label}
+        </Text>
+      </Pressable>
+    );
+  };
 
   return (
     <SafeAreaView edges={["top"]} style={styles.safe}>
-        <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.tabs}
-            >
-      <View style={styles.nav}>
-        <Pressable onPress={() => router.push("/")} style={styles.item}>
-          <Text style={styles.text}>Home</Text>
-        </Pressable>
-
-        <Pressable onPress={() => router.push("/clothingMain")} style={styles.item}>
-          <Text style={styles.text}>Clothing</Text>
-        </Pressable>
-
-        <Pressable onPress={() => router.push("/groceryMain")} style={styles.item}>
-          <Text style={styles.text}>Grocery</Text>
-        </Pressable>
-
-        <Pressable onPress={() => router.push("/electronicsMain")} style={styles.item}>
-          <Text style={styles.text}>Electronics</Text>
-        </Pressable>
-
-        <Pressable onPress={() => router.push("/jewelleryMain")} style={styles.item}>
-          <Text style={styles.text}>Jewellery</Text>
-        </Pressable>
-
-        <Pressable onPress={() => router.push("/hotelsMain")} style={styles.item}>
-          <Text style={styles.text}>Hotels</Text>
-        </Pressable>
-      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <View style={styles.nav}>
+          <Item label="Home" icon="🏠" route="/" />
+          <Item label="Clothing" icon="👕" route="/clothingMain" />
+          <Item label="Grocery" icon="🛒" route="/groceryMain" />
+          <Item label="Electronics" icon="📱" route="/electronicsMain" />
+          <Item label="Jewellery" icon="💍" route="/jewelleryMain" />
+          <Item label="Hotels" icon="🏢" route="/hotelsMain" />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -46,25 +54,52 @@ const styles = StyleSheet.create({
   safe: {
     backgroundColor: "#fff",
   },
-   tabs: { flexDirection: "row",
-     paddingHorizontal: 16, 
-      marginTop: 12,
-     marginBottom: 5,
-     gap: 15,
-     },
+
   nav: {
     flexDirection: "row",
-    justifyContent: "space-around",
     paddingVertical: 10,
+    paddingHorizontal: 6,
     borderBottomWidth: 1,
     borderColor: "#e5e7eb",
   },
+
   item: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    width: 80,
   },
-  text: {
-    fontSize: 16,
-    fontWeight: "700",
+
+  /* 🔵 ICON CONTAINER (Flipkart style) */
+  iconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#f3f4f6",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  activeIconWrap: {
+    backgroundColor: "#4067bc",
+  },
+
+  icon: {
+    fontSize: 22,
+  },
+
+  activeIcon: {
+    color: "#fff",
+  },
+
+  label: {
+    fontSize: 12,
+    marginTop: 6,
+    color: "#6b7280",
+    fontWeight: "600",
+  },
+
+  activeLabel: {
+    color: "#2563eb",
+    fontWeight: "800",
   },
 });
