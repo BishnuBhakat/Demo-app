@@ -1,3 +1,4 @@
+
 import {
   View,
   Text,
@@ -7,7 +8,7 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
-import { useState } from "react";
+import { useState,useMemo } from "react";
 import HeaderNav from "../components/HeaderNav";
 import { groceryItems } from "./data/groceryData";
 import { useCart } from "./context/CartContext";
@@ -23,28 +24,29 @@ export default function Grocery() {
     const { toggleLike } = useWishlist();
     const [search, setSearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
-  
-    const filteredItems = groceryItems.filter((item) => {
-        const searchMatch = item.name
-          .toLowerCase()
-          .includes(search.toLowerCase());
+     const filteredItems = useMemo(() => {
+        const q = search.trim().toLowerCase();
     
-        const categoryMatch =
-          selectedCategory === "All"
-            ? true
-            : item.category.toLowerCase() ===
-              selectedCategory.toLowerCase();
+        return groceryItems.filter((item) => {
+          const matchCategory =
+            selectedCategory === "All" || item.category === selectedCategory;
     
-        return searchMatch && categoryMatch;
-      });
+          const matchSearch =
+            !q ||
+            item.name.toLowerCase().includes(q) ||
+            item.category.toLowerCase().includes(q) ;
+    
+          return matchCategory && matchSearch;
+        });
+      }, [selectedCategory, search]);
   
     return (
       <View style={styles.container}>
         <HeaderNav />
-  
         <View style={styles.header}>
-          <Text style={styles.title}>Jewellery Store</Text>
+          <Text style={styles.title}>Grocery Store</Text>
         </View>
+          {/* 🔍 SEARCH BAR */}
             <View style={styles.searchWrapper}>
                 <TextInput
                     placeholder="Search for groceries...."
@@ -55,6 +57,7 @@ export default function Grocery() {
             </View>
   
         {/* Categories */}
+        <View style={styles.categoryWrapper}>
         <FlatList
           data={CATEGORIES}
           horizontal
@@ -75,6 +78,7 @@ export default function Grocery() {
             );
           }}
         />
+        </View>
   
         {/* Products grid (same fix as clothing/grocery) */}
         {filteredItems.length === 0 ? (
@@ -156,12 +160,18 @@ export default function Grocery() {
       </View>
     );
   }
+ 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
   header: { padding: 16 },
   title: { fontSize: 22, fontWeight: "900" },
+  categoryWrapper: {
+  backgroundColor: "#f9fafb",
+  paddingVertical: 14,
+  marginBottom: 12,          // ✅ space before cards start
+},
 
-  categoryRow: { paddingHorizontal: 12, paddingVertical: 18, gap: 15 },
+  categoryRow: { paddingHorizontal: 12,  gap: 15 },
   categoryPill: {
     height: 44,
     borderRadius: 90,
@@ -195,7 +205,7 @@ const styles = StyleSheet.create({
 
   addBtn: {
     marginTop: 6,
-    backgroundColor: "#2bd016ff",
+    backgroundColor:"#2bd016ff"  ,
     paddingVertical: 10,
     borderRadius: 12,
     alignItems: "center",

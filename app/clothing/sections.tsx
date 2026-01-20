@@ -62,27 +62,28 @@ export default function ClothingSections() {
       </View>
 
       {/* Tabs */}
-      <FlatList
-                data={SECTIONS}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(x) => x}
-                contentContainerStyle={styles.categoryRow}
-                renderItem={({ item }) => {
-                  const active = item === selectedSection;
-                  return (
-                    <Pressable
-                      onPress={() => setSelectedSection(item)}
-                      style={[styles.categoryPill, active && styles.categoryActive]}
-                    >
-                      <Text style={[styles.categoryText, active && styles.categoryTextActive]}>
-                        {item}
-                      </Text>
-                    </Pressable>
-                  );
-                }}
-              />
-
+      <View style={styles.categoryWrapper}>
+        <FlatList
+          data={SECTIONS}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(x) => x}
+          contentContainerStyle={styles.categoryRow}
+          renderItem={({ item }) => {
+            const active = item === selectedSection;
+            return (
+              <Pressable
+                onPress={() => setSelectedSection(item)}
+                style={[styles.categoryPill, active && styles.categoryActive]}
+              >
+                <Text style={[styles.categoryText, active && styles.categoryTextActive]}>
+                  {item}
+                </Text>
+              </Pressable>
+            );
+          }}
+        />
+      </View>
 
       {/* Products */}
       {filteredItems.length === 0 ? (
@@ -171,8 +172,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
   header: { padding: 16 },
   title: { fontSize: 22, fontWeight: "900" },
-
-  categoryRow: { paddingHorizontal: 12, paddingVertical: 18, gap: 15 },
+  categoryWrapper: {
+  backgroundColor: "#f9fafb",
+  paddingVertical: 14,
+  marginBottom: 12,          // ✅ space before cards start
+},
+  categoryRow: { paddingHorizontal: 12, gap: 15 },
   categoryPill: {
     height: 44,
     borderRadius: 90,

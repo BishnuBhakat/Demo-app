@@ -32,4 +32,36 @@ export const electronicsItems = [
     category: "Accessories",
     section: "Audio",
   },
+  {
+    id: "e5",
+    name: "Dell Monitor",
+    price: 15999, 
+    image: "https://picsum.photos/300?e5",
+    category: "Accessories",
+    section: "Display", 
+  },
+  {
+    id: "e6",
+    name: "MacBook Pro",
+    price: 129999,
+    image: "https://picsum.photos/300?e6",
+    category: "Laptops",
+    section: "Computers",
+  },
+  {
+    id: "e7",
+    name: "OnePlus 11",
+    price: 49999,
+    image: "https://picsum.photos/300?e7",
+    category: "Mobiles",
+    section: "Smartphones",
+  },
+  {
+    id: "e8",
+    name: "LG OLED TV",
+    price: 89999,
+    image: "https://picsum.photos/300?e8",
+    category: "Television",
+    section: "OLED TV",
+  }
 ];

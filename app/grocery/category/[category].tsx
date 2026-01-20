@@ -6,29 +6,29 @@
 //   Pressable,
 //   StyleSheet,
 // } from "react-native";
-// import { useLocalSearchParams } from "expo-router";
+// import { useLocalSearchParams, useRouter } from "expo-router";
 // import HeaderNav from "../../../components/HeaderNav";
-// import { clothingItems } from "../../data/clothingData";
+// import { groceryItems } from "../../data/groceryData";
 // import { useCart } from "../../context/CartContext";
 
-// export default function ClothingCategoryProducts() {
+// export default function CategoryProducts() {
 //   const params = useLocalSearchParams();
+//   const router = useRouter();
 //   const { addToCart } = useCart();
 
+//   // ✅ ENSURE category is a string
 //   const category =
-//     typeof params.category === "string"
-//       ? params.category
-//       : Array.isArray(params.category)
-//       ? params.category[0]
-//       : "";
+//     typeof params.categories === "string" ? params.categories : "";
 
-//   const filteredItems = clothingItems.filter(
-//     (item) => item.category.toLowerCase() === category.toLowerCase()
+//   // ✅ FILTER WORKS NOW
+//   const filteredItems = groceryItems.filter(
+//     (item) => item.category === category
 //   );
 
 //   return (
 //     <View style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
 //       <HeaderNav />
+
 //       <Text style={styles.title}>{category}</Text>
 
 //       {filteredItems.length === 0 && (
@@ -42,9 +42,18 @@
 //         contentContainerStyle={{ padding: 10 }}
 //         renderItem={({ item }) => (
 //           <View style={styles.card}>
-//             <Image source={{ uri: item.image }} style={styles.image} />
-//             <Text style={styles.name}>{item.name}</Text>
-//             <Text style={styles.price}>₹{item.price}</Text>
+//             <Pressable
+//               onPress={() =>
+//                 router.push({
+//                   pathname: "/product/[id]",
+//                   params: { id: item.id },
+//                 })
+//               }
+//             >
+//               <Image source={{ uri: item.image }} style={styles.image} />
+//               <Text style={styles.name}>{item.name}</Text>
+//               <Text style={styles.price}>₹{item.price}</Text>
+//             </Pressable>
 
 //             <Pressable
 //               style={styles.addBtn}
@@ -55,7 +64,7 @@
 //                   price: item.price,
 //                   image: item.image,
 //                   quantity: 1,
-//                   type: "clothing",
+//                   type: "grocery",
 //                 })
 //               }
 //             >
@@ -69,7 +78,11 @@
 // }
 
 // const styles = StyleSheet.create({
-//   title: { fontSize: 22, fontWeight: "700", padding: 12 },
+//   title: {
+//     fontSize: 22,
+//     fontWeight: "700",
+//     padding: 12,
+//   },
 //   card: {
 //     backgroundColor: "#fff",
 //     borderRadius: 12,
@@ -77,11 +90,21 @@
 //     margin: 6,
 //     flex: 1,
 //   },
-//   image: { height: 120, borderRadius: 8 },
-//   name: { fontSize: 14, fontWeight: "600", marginTop: 6 },
-//   price: { fontWeight: "bold", marginVertical: 4 },
+//   image: {
+//     height: 100,
+//     borderRadius: 8,
+//   },
+//   name: {
+//     fontSize: 14,
+//     fontWeight: "600",
+//     marginTop: 6,
+//   },
+//   price: {
+//     fontWeight: "bold",
+//     marginVertical: 4,
+//   },
 //   addBtn: {
-//     backgroundColor: "#2563eb",
+//     backgroundColor: "#22c55e",
 //     paddingVertical: 6,
 //     borderRadius: 6,
 //     alignItems: "center",

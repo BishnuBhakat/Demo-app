@@ -47,11 +47,12 @@ export default function ElectronicsMain() {
   return (
     <View style={styles.container}>
       <HeaderNav />
-      <View style={styles.header}></View>
-      <Text style={styles.title}>Electronics Store</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Electronics Store</Text>
+      </View>
 
       {/* 🔍 SEARCH BAR */}
-      <View style={styles.searchWrap}>
+      <View style={styles.searchWrapper}>
         <TextInput
           value={search}
           onChangeText={setSearch}
@@ -61,6 +62,7 @@ export default function ElectronicsMain() {
       </View>
 
       {/* 🧭 CATEGORIES */}
+      <View style={styles.categoryWrapper}>
       <FlatList
         data={CATEGORIES}
         horizontal
@@ -83,6 +85,7 @@ export default function ElectronicsMain() {
           );
         }}
       />
+      </View>
 
       {/* 📦 PRODUCTS */}
        {filteredItems.length === 0 ? (
@@ -160,40 +163,31 @@ export default function ElectronicsMain() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
-    header: { padding: 16 },
-  title: { fontSize: 22, fontWeight: "900", padding: 12 },
-
-  searchWrap: {
-  paddingHorizontal: 12,
-  paddingBottom: 8,
+  header: { padding: 16 },
+  title: { fontSize: 22, fontWeight: "900" },
+  categoryWrapper: {
+  backgroundColor: "#f9fafb",
+  paddingVertical: 14,
+  marginBottom: 12,          // ✅ space before cards start
 },
 
-search: {
-  backgroundColor: "#e5e7eb",
-  borderRadius: 14,
-  paddingHorizontal: 12,
-  paddingVertical: 12,
-  fontSize: 16,
-},
-
-  categoryRow: { paddingHorizontal: 12, paddingVertical: 10, gap: 12 },
+  categoryRow: { paddingHorizontal: 12, gap: 15 },
   categoryPill: {
-    minWidth: 90,
     height: 44,
-    borderRadius: 22,
+    borderRadius: 90,
     backgroundColor: "#e5e7eb",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   categoryActive: { backgroundColor: "#5b5555ff" },
-  categoryText: { fontWeight: "700" },
+  categoryText: { fontWeight: "700", color: "#111827" },
   categoryTextActive: { color: "#fff" },
 
-  list: { paddingHorizontal: 12, paddingBottom: 100 },
+  list: { paddingHorizontal: 16, paddingBottom: 30 , paddingTop: 10},
   row: { justifyContent: "space-between", marginBottom: 14 },
 
   cardWrapper: { width: "48%" },
@@ -202,20 +196,33 @@ search: {
     borderRadius: 16,
     padding: 12,
     elevation: 2,
-    position: "relative",
+    overflow: "hidden",
+    
   },
-  image: { width: "100%", height: 160, borderRadius: 12 },
+  image: { width: "100%", height: 110, borderRadius: 12 },
   cardBody: { marginTop: 8 },
   name: { fontWeight: "800" },
-  meta: { fontSize: 12, color: "#6b7280", marginTop: 4 },
-  price: { fontWeight: "900", marginTop: 4 },
+  meta: { marginTop: 4, color: "#6b7280", fontWeight: "700", fontSize: 12 },
+  price: { marginTop: 4, fontWeight: "900" },
 
   addBtn: {
     marginTop: 6,
-    backgroundColor: "#5b5555ff",
+    backgroundColor:"#5b5555ff" ,
     paddingVertical: 10,
     borderRadius: 12,
     alignItems: "center",
+  },
+   /* SEARCH */
+  searchWrapper: {
+    paddingHorizontal: 12,
+    
+  },
+  search: {
+    backgroundColor: "#ffffffff",
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    fontSize: 16,
   },
 
    heartBtn: {
@@ -233,5 +240,7 @@ search: {
   shadowOpacity: 0.2,
   shadowRadius: 4,
 },
-  heartText: { fontSize: 18 },
+heartText: {
+  fontSize: 16,
+},
 });

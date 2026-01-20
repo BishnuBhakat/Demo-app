@@ -48,6 +48,7 @@ export default function JewelleryMain() {
           </View>
 
       {/* Categories */}
+      <View style={styles.categoryWrapper}>
       <FlatList
         data={CATEGORIES}
         horizontal
@@ -68,6 +69,7 @@ export default function JewelleryMain() {
           );
         }}
       />
+      </View>
 
       {/* Products grid (same fix as clothing/grocery) */}
       {filteredItems.length === 0 ? (
@@ -154,8 +156,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
   header: { padding: 16 },
   title: { fontSize: 22, fontWeight: "900" },
+  categoryWrapper: {
+  backgroundColor: "#f9fafb",
+  paddingVertical: 14,
+  marginBottom: 12,          // ✅ space before cards start
+},
 
-  categoryRow: { paddingHorizontal: 12, paddingVertical: 18, gap: 15 },
+  categoryRow: { paddingHorizontal: 12,  gap: 15 },
   categoryPill: {
     height: 44,
     borderRadius: 90,
