@@ -1,10 +1,17 @@
 import React, { useMemo, useState } from "react";
-import { View, Text, StyleSheet, Pressable, Image, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Image,
+  ScrollView,
+  Modal,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import HeaderNav from "../../components/HeaderNav";
 
-// ✅ IMPORTANT: import from NON-app folder (see section 2 below)
-// If your data is currently inside app/data, move it out (explained below)
+// ✅ make sure these paths match your project (data should be OUTSIDE app/)
 import { groceryItems } from "../data/groceryData";
 import { clothingItems } from "../data/clothingData";
 import { electronicsItems } from "../data/electronicsData";
@@ -35,22 +42,21 @@ type Order = {
 export default function OrderDetails() {
   const router = useRouter();
   const params = useLocalSearchParams<{ order?: string }>();
-  const [rating, setRating] = useState(0);
 
-  // ✅ Hook 1: parse order (ALWAYS runs)
+  const [rating, setRating] = useState(0);
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  // ✅ hooks must run unconditionally
   const order: Order | null = useMemo(() => {
     const raw = params.order;
     if (!raw || typeof raw !== "string") return null;
-
     try {
       return JSON.parse(raw) as Order;
-    } catch (e) {
-      console.warn("Invalid order JSON param", e);
+    } catch {
       return null;
     }
   }, [params.order]);
 
-  // ✅ Hook 2: build allProducts (ALWAYS runs)
   const allProducts = useMemo(() => {
     const g = (groceryItems ?? []).map((p) => ({ ...p, type: "grocery" as const }));
     const c = (clothingItems ?? []).map((p) => ({ ...p, type: "clothing" as const }));
@@ -59,22 +65,17 @@ export default function OrderDetails() {
     return [...g, ...c, ...e, ...j];
   }, []);
 
-  // ✅ Derive values safely (NO early return needed)
   const firstItem = order?.items?.[0];
   const deliveredAt = order?.deliveredAt ?? "Dec 22, 2025";
   const confirmedAt = order?.confirmedAt ?? deliveredAt;
+  const delivered = String(order?.status ?? "").toLowerCase() === "delivered";
 
-  // ✅ Hook 3: mayLike (ALWAYS runs)
   const mayLike = useMemo(() => {
     const excludeId = firstItem?.id;
     const list = allProducts.filter((p: any) => p?.id && p.id !== excludeId);
-
-    // shuffle + take 6
     const shuffled = [...list].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 6);
   }, [allProducts, firstItem?.id]);
-
-  const delivered = String(order?.status ?? "").toLowerCase() === "delivered";
 
   const openRatePage = () => {
     router.push({
@@ -94,7 +95,19 @@ export default function OrderDetails() {
     });
   };
 
-  // ✅ NOW it’s safe to return early
+  // ✅ help actions (replace routes if you want)
+  const downloadInvoice = () => {
+    setHelpOpen(false);
+    // If you have an invoice page, route to it:
+    // router.push({ pathname: "/invoice", params: { orderId: order?.id ?? "" } });
+  };
+
+  const chatWithUs = () => {
+    setHelpOpen(false);
+    // If you have a support/chat page:
+    // router.push("/support-chat");
+  };
+
   if (!order) {
     return (
       <View style={{ flex: 1, backgroundColor: "#f1f5f9" }}>
@@ -118,7 +131,8 @@ export default function OrderDetails() {
 
         <Text style={styles.topTitle}>Order Details</Text>
 
-        <Pressable style={styles.helpBtn} onPress={() => {}}>
+        {/* ✅ Help button clickable */}
+        <Pressable style={styles.helpBtn} onPress={() => setHelpOpen(true)}>
           <Text style={styles.helpText}>Help</Text>
         </Pressable>
       </View>
@@ -173,6 +187,17 @@ export default function OrderDetails() {
               <Text style={styles.progressSub}>{delivered ? deliveredAt : "-"}</Text>
             </View>
           </View>
+
+          <View style={styles.returnRow}>
+            <Text style={styles.infoIcon}>i</Text>
+            <Text style={styles.returnText}>
+              Return policy ended on {deliveredAt}
+            </Text>
+          </View>
+
+          <Pressable style={styles.updateBtn}>
+            <Text style={styles.updateText}>See all updates</Text>
+          </Pressable>
         </View>
 
         {/* Rate */}
@@ -207,9 +232,8 @@ export default function OrderDetails() {
           </View>
         </View>
 
-        {/* ✅ You May Also Like (CLICKABLE -> /product/[id]) */}
+        {/* You May Also Like (clickable -> product details) */}
         <Text style={styles.mayLikeTitle}>You May Also Like...</Text>
-
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.mayLikeRow}>
             {mayLike.map((p: any) => (
@@ -232,14 +256,50 @@ export default function OrderDetails() {
         <Text style={styles.sectionTitle}>Delivery details</Text>
         <View style={styles.infoCard}>
           <Text style={styles.infoLine}>
-            📍 <Text style={styles.bold}>{order.addressTitle ?? "Address"}</Text> {order.addressLine ?? ""}
+            📍 <Text style={styles.bold}>{order.addressTitle ?? "Address"}</Text>{" "}
+            {order.addressLine ?? ""}
           </Text>
-
           <Text style={[styles.infoLine, { marginTop: 10 }]}>
-            👤 <Text style={styles.bold}>{order.customerName ?? "Customer"}</Text> {order.phone ?? ""}
+            👤 <Text style={styles.bold}>{order.customerName ?? "Customer"}</Text>{" "}
+            {order.phone ?? ""}
           </Text>
         </View>
       </ScrollView>
+
+      {/* ✅ Flipkart-like HELP Bottom Sheet */}
+      <Modal
+        transparent
+        visible={helpOpen}
+        animationType="fade"
+        onRequestClose={() => setHelpOpen(false)}
+      >
+        {/* backdrop */}
+        <Pressable style={styles.backdrop} onPress={() => setHelpOpen(false)} />
+
+        {/* sheet */}
+        <View style={styles.sheet}>
+          <View style={styles.sheetHeader}>
+            <Text style={styles.sheetTitle}>Need help?</Text>
+            <Pressable onPress={() => setHelpOpen(false)} style={styles.sheetClose}>
+              <Text style={styles.sheetCloseText}>✕</Text>
+            </Pressable>
+          </View>
+
+          <Pressable style={styles.sheetRow} onPress={downloadInvoice}>
+            <Text style={styles.sheetIcon}>⬇️</Text>
+            <Text style={styles.sheetRowText}>Download Invoice</Text>
+            <Text style={styles.sheetArrow}>›</Text>
+          </Pressable>
+
+          <View style={styles.sheetDivider} />
+
+          <Pressable style={styles.sheetRow} onPress={chatWithUs}>
+            <Text style={styles.sheetIcon}>💬</Text>
+            <Text style={styles.sheetRowText}>Chat with us</Text>
+            <Text style={styles.sheetArrow}>›</Text>
+          </Pressable>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -260,11 +320,12 @@ const styles = StyleSheet.create({
   backText: { fontSize: 22, fontWeight: "900" },
   topTitle: { flex: 1, fontSize: 18, fontWeight: "900" },
   helpBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "#cbd5e1",
+    backgroundColor: "#fff",
   },
   helpText: { fontWeight: "900", color: "#0f172a" },
 
@@ -321,6 +382,24 @@ const styles = StyleSheet.create({
   progressLabels: { flexDirection: "row", marginTop: 10 },
   progressMain: { fontWeight: "900", color: "#111827" },
   progressSub: { marginTop: 3, color: "#6b7280", fontWeight: "700", fontSize: 12 },
+
+  returnRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 12 },
+  infoIcon: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: "#9ca3af",
+    color: "#6b7280",
+    textAlign: "center",
+    fontWeight: "900",
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  returnText: { color: "#6b7280", fontWeight: "700" },
+
+  updateBtn: { marginTop: 12, alignItems: "center" },
+  updateText: { color: "#2563eb", fontWeight: "900", fontSize: 16 },
 
   rateTitle: { marginTop: 18, marginHorizontal: 12, fontSize: 20, fontWeight: "900" },
   rateCard: {
@@ -404,4 +483,42 @@ const styles = StyleSheet.create({
   },
   infoLine: { color: "#0f172a", fontWeight: "700", lineHeight: 20 },
   bold: { fontWeight: "900" },
+
+  /* ✅ HELP SHEET */
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.45)",
+  },
+  sheet: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    paddingTop: 14,
+    paddingBottom: 18,
+    paddingHorizontal: 16,
+  },
+  sheetHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingBottom: 10,
+  },
+  sheetTitle: { fontSize: 18, fontWeight: "900" },
+  sheetClose: { padding: 8, borderRadius: 12 },
+  sheetCloseText: { fontSize: 18, fontWeight: "900" },
+
+  sheetRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 16,
+  },
+  sheetIcon: { width: 28, fontSize: 18 },
+  sheetRowText: { flex: 1, fontSize: 16, fontWeight: "700", color: "#111827" },
+  sheetArrow: { fontSize: 22, color: "#94a3b8", paddingLeft: 10 },
+
+  sheetDivider: { height: 1, backgroundColor: "#e5e7eb" },
 });
