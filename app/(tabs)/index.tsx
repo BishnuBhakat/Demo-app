@@ -11,9 +11,9 @@ import {
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import HeaderNav from "../../components/HeaderNav";
-import {OFFERS} from "../data/offersData";
-import {TRENDING} from "../data/trendingData";
-import {RANDOM_ITEMS} from "../data/randomItemsData";
+import { OFFERS } from "../data/offersData";
+import { TRENDING } from "../data/trendingData";
+import { RANDOM_ITEMS } from "../data/randomItemsData";
 
 export default function Home() {
   const router = useRouter();
@@ -22,12 +22,7 @@ export default function Home() {
   const goExploreMore = () => router.push("./(tabs)/explore-more");
   const goTrending = () => router.push("./(tabs)/trending");
   const goTopDeals = () => router.push("./(tabs)/top-deals");
-  const goProduct = (id: string) => {
-    router.push({
-      pathname: "./product/[id]",
-      params: { id },
-    });
-  };
+
   const goGlobalSearch = () =>
     router.push({
       pathname: "./(tabs)/search",
@@ -38,30 +33,38 @@ export default function Home() {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <HeaderNav />
 
-      {/* Address */}
-      <Pressable style={styles.addressBox}>
-        <Text style={styles.addressTitle}>Deliver to</Text>
-        <Text style={styles.addressText}>DIPTI BHOWMIK, 711204</Text>
-      </Pressable>
+      {/* 🔵 ADDRESS + SEARCH (AMAZON STYLE BLOCK) */}
+      <View style={styles.topBlock}>
+        {/* Address */}
+        {/* Address (THINNER & NOT BOLD) */}
+        <Pressable style={styles.addressWrap}>
+          <Text style={styles.addressLabel}>Deliver to</Text>
+          <Text style={styles.addressText}>
+            DIPTI BHOWMIK, 711204
+          </Text>
+        </Pressable>
 
-      {/* Global Search (opens Search page) */}
-      <View style={styles.searchBox}>
+        {/* Search (WIDER + ICON) */}
         <View style={styles.searchRow}>
-          <TextInput
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder="Search any product (grocery / clothing / jewellery / electronics)…"
-            style={styles.searchInput}
-            returnKeyType="search"
-            onSubmitEditing={goGlobalSearch}
-          />
+          <View style={styles.searchInputWrap}>
+            <Text style={styles.searchIcon}>🔍</Text>
+            <TextInput
+              value={searchText}
+              onChangeText={setSearchText}
+              placeholder="Search any product"
+              style={styles.searchInput}
+              returnKeyType="search"
+              onSubmitEditing={goGlobalSearch}
+            />
+          </View>
+
           <Pressable onPress={goGlobalSearch} style={styles.searchBtn}>
             <Text style={styles.searchBtnText}>Search</Text>
           </Pressable>
         </View>
       </View>
 
-      {/* Offers Carousel */}
+      {/* OFFERS */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -72,12 +75,10 @@ export default function Home() {
         ))}
       </ScrollView>
 
-      {/* Trending for You */}
+      {/* TRENDING */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Trending for You</Text>
-
-          {/* ✅ View All button only */}
           <Pressable onPress={goTrending}>
             <Text style={styles.viewAll}>View All</Text>
           </Pressable>
@@ -90,10 +91,7 @@ export default function Home() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingRight: 12 }}
           renderItem={({ item }) => (
-            <Pressable
-              style={styles.trendingCard}
-              onPress={goTrending} 
-            >
+            <Pressable style={styles.trendingCard} onPress={goTrending}>
               <Image source={{ uri: item.image }} style={styles.trendingImg} />
               <Text style={styles.itemName} numberOfLines={1}>
                 {item.name}
@@ -104,13 +102,10 @@ export default function Home() {
         />
       </View>
 
-
-      {/* Today's Top Deals (CLICKABLE) */}
-       <View style={styles.section}>
+      {/* TOP DEALS */}
+      <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Top Deals</Text>
-
-          {/* ✅ View All button only */}
           <Pressable onPress={goTopDeals}>
             <Text style={styles.viewAll}>View All</Text>
           </Pressable>
@@ -123,10 +118,7 @@ export default function Home() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingRight: 12 }}
           renderItem={({ item }) => (
-            <Pressable
-              style={styles.trendingCard}
-               onPress={goTopDeals} // optional
-            >
+            <Pressable style={styles.trendingCard} onPress={goTopDeals}>
               <Image source={{ uri: item.image }} style={styles.trendingImg} />
               <Text style={styles.itemName} numberOfLines={1}>
                 {item.name}
@@ -137,7 +129,7 @@ export default function Home() {
         />
       </View>
 
-      {/* Explore More (FULL SECTION CLICKABLE) */}
+      {/* EXPLORE MORE */}
       <Pressable onPress={goExploreMore} style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Explore More</Text>
@@ -155,49 +147,86 @@ export default function Home() {
         ))}
       </Pressable>
 
-      <View style={{ height: 18 }} />
+      <View style={{ height: 20 }} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f9fafb" },
-  tabs: {
-    flexDirection: "row",
-    paddingHorizontal: 5,
-    marginTop: 5,
-    marginBottom: 5,
-    
-  },
 
-  addressBox: {
-    padding : 10,
+  /* 🔵 TOP BLOCK */
+  topBlock: {
     backgroundColor: "#fff",
-    borderBottomWidth: 2,
-    borderColor: "#ffffffff",
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderColor: "#e5e7eb",
   },
-  addressTitle: { fontSize: 12, color: "#6b7280" },
-  addressText: { fontSize: 14, fontWeight: "800" },
 
-  searchBox: { padding: 14 },
-  searchRow: { flexDirection: "row", gap: 10, alignItems: "center" },
-  searchInput: {
-    flex: 1,
+  addressWrap: {
+    backgroundColor: "#eef2f7",
+    paddingVertical: 8,        // 👈 thinner
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    marginBottom: 8,           // 👈 less gap
+  },
+
+  addressLabel: {
+    fontSize: 11,
+    color: "#6b7280",
+    fontWeight: "500",         // 👈 not bold
+  },
+
+  addressText: {
+    fontSize: 14,
+    fontWeight: "600",         // 👈 lighter than before
+    color: "#111827",
+  },
+
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+
+  searchInputWrap: {
+    flex: 1,                   // 👈 makes search bar wider
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#e5e7eb",
     borderRadius: 14,
     paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
+    height: 46,
   },
+
+  searchIcon: {
+    fontSize: 18,
+    marginRight: 6,
+    color: "#6b7280",
+  },
+
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 0,
+  },
+
   searchBtn: {
     backgroundColor: "#2563eb",
-    paddingHorizontal: 14,
+    paddingHorizontal: 18,
     paddingVertical: 12,
     borderRadius: 14,
   },
-  searchBtnText: { color: "#fff", fontWeight: "900" },
 
-  carousel: { paddingHorizontal: 14 },
+  searchBtnText: {
+    color: "#fff",
+    fontWeight: "900",
+  },
+
+
+  carousel: { paddingHorizontal: 14, marginTop: 14 },
   banner: {
     width: 320,
     height: 150,
@@ -205,15 +234,14 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
 
-  section: { paddingHorizontal: 14, marginTop: 18 },
-  sectionTitle: { fontSize: 18, fontWeight: "900", marginBottom: 10 },
-
+  section: { paddingHorizontal: 14, marginTop: 20 },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
   },
+  sectionTitle: { fontSize: 18, fontWeight: "900" },
   viewAll: { color: "#2563eb", fontWeight: "900" },
 
   trendingCard: {
@@ -224,15 +252,6 @@ const styles = StyleSheet.create({
     width: 120,
   },
   trendingImg: { width: 100, height: 100, borderRadius: 12 },
-
-  dealCard: {
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    padding: 12,
-    marginRight: 12,
-    width: 140,
-  },
-  dealImg: { width: "100%", height: 90, borderRadius: 12 },
 
   listItem: {
     flexDirection: "row",

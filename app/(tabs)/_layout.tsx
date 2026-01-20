@@ -50,6 +50,7 @@ export default function TabLayout() {
 <Tabs.Screen name="search" options={{ href: null }} />
 <Tabs.Screen name="orders" options={{ href: null }} />
 <Tabs.Screen name="order-details" options={{ href: null }} />
+<Tabs.Screen name="rate-product" options={{ href: null }} />
 
       <Tabs.Screen
         name="offers"
