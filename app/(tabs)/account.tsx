@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -8,13 +8,58 @@ import {
   Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderNav from "../../components/HeaderNav";
 
 const FLIPKART_BLUE = "#2874F0";
 
+// ✅ storage key for profile
+const PROFILE_KEY = "profile";
+
+type Profile = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
 export default function Account() {
   const router = useRouter();
+
+  const [profile, setProfile] = useState<Profile>({
+    name: "Demo User",
+    email: "demo@gmail.com",
+    phone: "+91 98765 43210",
+  });
+
+  // ✅ Load profile whenever page is focused (after edit, it refreshes automatically)
+  useFocusEffect(
+    useCallback(() => {
+      let mounted = true;
+
+      (async () => {
+        try {
+          const raw = await AsyncStorage.getItem(PROFILE_KEY);
+          if (!raw) return;
+
+          const saved = JSON.parse(raw) as Partial<Profile>;
+          if (!mounted) return;
+
+          setProfile((prev) => ({
+            name: saved.name ?? prev.name,
+            email: saved.email ?? prev.email,
+            phone: saved.phone ?? prev.phone,
+          }));
+        } catch {
+          // ignore parse/storage errors
+        }
+      })();
+
+      return () => {
+        mounted = false;
+      };
+    }, [])
+  );
 
   const handleLogout = async () => {
     await AsyncStorage.multiRemove(["seenIntro", "loggedIn"]);
@@ -29,17 +74,29 @@ export default function Account() {
         {/* Top Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>DU</Text>
+            <Text style={styles.avatarText}>
+              {(profile.name?.trim()?.[0] ?? "D").toUpperCase()}
+              {(profile.name?.trim()?.split(" ")?.[1]?.[0] ?? "U").toUpperCase()}
+            </Text>
           </View>
 
           <View style={{ flex: 1 }}>
-            <Text style={styles.name}>Demo User</Text>
-            <Text style={styles.meta}>demo@gmail.com</Text>
-            <Text style={styles.meta}>+91 98765 43210</Text>
+            <Text style={styles.name}>{profile.name}</Text>
+            <Text style={styles.meta}>{profile.email}</Text>
+            <Text style={styles.meta}>{profile.phone}</Text>
           </View>
 
           <Pressable
-            onPress={() => router.push("/account/edit" as any)}
+            onPress={() =>
+              router.push({
+                pathname: "/edit-profile" as any,
+                params: {
+                  name: profile.name,
+                  email: profile.email,
+                  phone: profile.phone,
+                },
+              })
+            }
             style={styles.editBtn}
           >
             <Text style={styles.editText}>EDIT</Text>
@@ -47,24 +104,19 @@ export default function Account() {
         </View>
 
         {/* Quick Actions */}
-        {/* Quick Actions */}
-<View style={styles.quickRow}>
-  <QuickBtn
-    label="Orders"
-    emoji="📦"
-    onPress={() => router.push("/(tabs)/orders")}
-  />
-  <QuickBtn
-    label="Wishlist"
-    emoji="❤️"
-    onPress={() => router.push("/wishlist")}
-  />
-  <QuickBtn
-    label="Cart"
-    emoji="🛒"
-    onPress={() => router.push("/cart")}
-  />
-</View>
+        <View style={styles.quickRow}>
+          <QuickBtn
+            label="Orders"
+            emoji="📦"
+            onPress={() => router.push("/(tabs)/orders")}
+          />
+          <QuickBtn
+            label="Wishlist"
+            emoji="❤️"
+            onPress={() => router.push("/wishlist")}
+          />
+          <QuickBtn label="Cart" emoji="🛒" onPress={() => router.push("/cart")} />
+        </View>
 
         {/* Section: Account Options */}
         <Text style={styles.sectionTitle}>Account Settings</Text>
@@ -82,9 +134,9 @@ export default function Account() {
           />
           <Divider />
           <RowItem
-            title="Payments"
-            subtitle="Saved cards, UPI & more"
-            onPress={() => router.push("/payments" as any)}
+            title="Add New Address"
+            subtitle="Create a new delivery address"
+            onPress={() => router.push("/address-form" as any)}
           />
           <Divider />
           <RowItem
