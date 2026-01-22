@@ -60,50 +60,57 @@ export default function CartScreen() {
       : hotelTotal;
 
   return (
-    <View style={styles.container}>
-      <HeaderNav />
-      <Text style={styles.title}>My Cart</Text>
-      
+  <View style={styles.screen}>
+    <HeaderNav />
 
-     {/* Tabs */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.tabRow}
-      >
-        <TabButton
-          label={tabLabel("Clothing", clothingCount)}
-          active={tab === "clothing"}
-          onPress={() => setTab("clothing")}
-        />
+    <Text style={styles.title}>My Cart</Text>
 
-        <TabButton
-          label={tabLabel("Grocery", groceryCount)}
-          active={tab === "grocery"}
-          onPress={() => setTab("grocery")}
-        />
+    {/* Tabs */}
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.tabRow}
+    >
+      <TabButton
+        label={tabLabel("Clothing", clothingCount)}
+        active={tab === "clothing"}
+        onPress={() => setTab("clothing")}
+      />
+      <TabButton
+        label={tabLabel("Grocery", groceryCount)}
+        active={tab === "grocery"}
+        onPress={() => setTab("grocery")}
+      />
+      <TabButton
+        label={tabLabel("Jewellery", jewelleryCount)}
+        active={tab === "jewellery"}
+        onPress={() => setTab("jewellery")}
+      />
+      <TabButton
+        label={tabLabel("Electronics", electronicsCount)}
+        active={tab === "electronics"}
+        onPress={() => setTab("electronics")}
+      />
+      {/* <TabButton
+        label="Hotels"
+        active={tab === "hotels"}
+        onPress={() => setTab("hotels")}
+      /> */}
+    </ScrollView>
 
-        <TabButton
-          label={tabLabel("Jewellery", jewelleryCount)}
-          active={tab === "jewellery"}
-          onPress={() => setTab("jewellery")}
-        />
-
-        <TabButton
-          label={tabLabel("Electronics", electronicsCount)}
-          active={tab === "electronics"}
-          onPress={() => setTab("electronics")}
-        />
-      </ScrollView>
-
-      {/* Cart list */}
+    {/* Cart list (ONLY scrollable area) */}
       <FlatList
         data={activeItems}
         keyExtractor={(item: any) => `${tab}:${item.id}`}
-        contentContainerStyle={{ padding: 12, paddingBottom: 110 }}
+        contentContainerStyle={{
+           paddingHorizontal: 12,
+           paddingTop: 6, 
+          paddingBottom: 180, // space for footer + bottom tabs
+        }}
         ListEmptyComponent={
-          <Text style={{ padding: 20, textAlign: "center" ,fontWeight:900 }}>No items in this cart.</Text>
+          <Text style={styles.emptyText}>No items in this cart.</Text>
         }
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }: any) => (
           <View style={styles.card}>
             <Image
@@ -117,7 +124,6 @@ export default function CartScreen() {
               </Text>
               <Text style={styles.meta}>₹{item.price}</Text>
 
-              {/* Qty controls */}
               {tab !== "hotels" && (
                 <View style={styles.qtyRow}>
                   <Pressable
@@ -140,9 +146,7 @@ export default function CartScreen() {
                     onPress={() => removeFromCart(item.id, tab)}
                     style={{ marginLeft: "auto" }}
                   >
-                    <Text style={{ color: "#ef4444", fontWeight: "900" }}>
-                      REMOVE
-                    </Text>
+                    <Text style={styles.remove}>REMOVE</Text>
                   </Pressable>
                 </View>
               )}
@@ -151,8 +155,8 @@ export default function CartScreen() {
         )}
       />
 
-      {/* Footer */}
-      {activeTotal > 0 && (
+    {/* Sticky Footer */}
+    {activeTotal > 0 && (
       <View style={styles.footer}>
         <View>
           <Text style={styles.totalLabel}>Total Amount</Text>
@@ -173,9 +177,10 @@ export default function CartScreen() {
           </Text>
         </Pressable>
       </View>
-      )}
-    </View>
-  );
+    )}
+  </View>
+);
+
 }
 
 function TabButton({
@@ -196,80 +201,148 @@ function TabButton({
     </Pressable>
   );
 }
-
 const styles = StyleSheet.create({
-  container: {  backgroundColor: "#fff" },
-  title: { fontSize: 26, fontWeight: "900", padding: 10 },
+  screen: {
+    flex: 1,
+    backgroundColor: "#ffffffff",
+  },
 
-tabRow: {
-  flexDirection: "row",
-  borderBottomWidth: 1,
-  borderColor: "#e5e7eb",
+title: {
+  fontSize: 26,
+  fontWeight: "900",
+  paddingHorizontal: 14,
+  marginTop: 10,
+  marginBottom: 4,   // 🔴 reduce this
 },
+
+  tabRow: {
+    paddingHorizontal: 14,
+    paddingBottom: 2,
+  },
+
   tabBtn: {
-  paddingHorizontal: 16,
-  paddingVertical: 12,
-  alignItems: "center",
-},
-  tabText: { fontSize: 18, fontWeight: "700", color: "#111827" },
-  tabTextActive: { color: "#2563eb" },
+    marginRight: 20,
+  },
+
+  tabText: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#64748b",
+  },
+
+  tabTextActive: {
+    color: "#2563eb",
+  },
+
   activeLine: {
     height: 3,
     backgroundColor: "#2563eb",
-    width: "70%",
-    marginTop: 8,
-    borderRadius: 2,
+    marginTop: 6,
+    borderRadius: 3,
   },
 
   card: {
     flexDirection: "row",
     backgroundColor: "#fff",
-    borderRadius: 14,
-    padding: 10,
-    marginBottom: 10,
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 12,
+     marginTop: 4,  
     borderWidth: 1,
-    borderColor: "#f3f4f6",
+    borderColor: "#e5e7eb",
   },
-  image: {
-    width: 90,
-    height: 90,
-    borderRadius: 12,
-    backgroundColor: "#e5e7eb",
-  },
-  name: { fontSize: 16, fontWeight: "800" },
-  meta: { marginTop: 4, color: "#6b7280", fontWeight: "700" },
 
-  qtyRow: { flexDirection: "row", alignItems: "center", marginTop: 10, gap: 10 },
-  qtyBtn: {
-    backgroundColor: "#e5e7eb",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
+  image: {
+    width: 70,
+    height: 70,
+    borderRadius: 12,
   },
-  qtyText: { fontSize: 18, fontWeight: "900" },
-  qtyNum: { fontWeight: "900" },
+
+  name: {
+    fontSize: 16,
+    fontWeight: "900",
+  },
+
+  meta: {
+    fontSize: 14,
+    fontWeight: "700",
+    marginTop: 4,
+  },
+
+  qtyRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    gap: 10,
+  },
+
+  qtyBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "#e5e7eb",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  qtyText: {
+    fontSize: 20,
+    fontWeight: "900",
+  },
+
+  qtyNum: {
+    fontSize: 16,
+    fontWeight: "900",
+  },
+
+  remove: {
+    color: "#ef4444",
+    fontWeight: "900",
+  },
+
+  emptyText: {
+    padding: 0,
+    textAlign: "center",
+    fontWeight: "900",
+    color: "#64748b",
+  },
 
   footer: {
     position: "absolute",
+    bottom: 1, // 👈 above bottom tabs
     left: 0,
     right: 0,
-    bottom: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 14,
     backgroundColor: "#fff",
     borderTopWidth: 1,
     borderColor: "#e5e7eb",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    elevation: 8,
   },
-  totalLabel: { color: "#6b7280", fontWeight: "700" },
-  totalValue: { fontSize: 18, fontWeight: "900", marginTop: 2 },
+
+  totalLabel: {
+    fontSize: 12,
+    color: "#6b7280",
+    fontWeight: "700",
+  },
+
+  totalValue: {
+    fontSize: 18,
+    fontWeight: "900",
+  },
 
   placeBtn: {
-    backgroundColor: "#fb923c",
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 12,
+    backgroundColor: "#2563eb",
+    paddingHorizontal: 22,
+    paddingVertical: 14,
+    borderRadius: 14,
   },
-  placeText: { color: "#fff", fontWeight: "900" },
+
+  placeText: {
+    color: "#fff",
+    fontWeight: "900",
+    fontSize: 16,
+  },
 });
