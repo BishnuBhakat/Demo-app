@@ -46,22 +46,23 @@ export default function Home() {
         </Pressable>
 
         {/* Search (WIDER + ICON) */}
-        <View style={styles.searchRow}>
-          <View style={styles.searchInputWrap}>
-            <Text style={styles.searchIcon}>🔍</Text>
-            <TextInput
-              value={searchText}
-              onChangeText={setSearchText}
-              placeholder="Search any product"
-              style={styles.searchInput}
-              returnKeyType="search"
-              onSubmitEditing={goGlobalSearch}
-            />
+        <View style={styles.sticky}>
+          <View style={styles.searchRow}>
+            <View style={styles.searchInputWrap}>
+              <Text style={styles.searchIcon}>🔍</Text>
+              <TextInput
+                value={searchText}
+                onChangeText={setSearchText}
+                placeholder="Search any product"
+                style={styles.searchInput}
+                returnKeyType="search"
+                onSubmitEditing={goGlobalSearch}
+              />
+            </View>
+            <Pressable onPress={goGlobalSearch} style={styles.searchBtn}>
+              <Text style={styles.searchBtnText}>Search</Text>
+            </Pressable>
           </View>
-
-          <Pressable onPress={goGlobalSearch} style={styles.searchBtn}>
-            <Text style={styles.searchBtnText}>Search</Text>
-          </Pressable>
         </View>
       </View>
 
@@ -154,16 +155,17 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9fafb" },
+  container: { flex: 1, backgroundColor: "#00ff15ff" },
 
   /* 🔵 TOP BLOCK */
   topBlock: {
-    backgroundColor: "#fff",
+    backgroundColor: "#885d5de7",
     paddingHorizontal: 14,
     paddingTop: 12,
     paddingBottom: 14,
     borderBottomWidth: 1,
     borderColor: "#e5e7eb",
+    zIndex: 100,
   },
 
   addressWrap: {
@@ -185,13 +187,14 @@ const styles = StyleSheet.create({
     fontWeight: "600",         // 👈 lighter than before
     color: "#111827",
   },
-
+  sticky: {
+    paddingBottom: 10,
+  },
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
   },
-
   searchInputWrap: {
     flex: 1,                   // 👈 makes search bar wider
     flexDirection: "row",

@@ -52,7 +52,7 @@ export default function HeaderNav() {
 
 const styles = StyleSheet.create({
   safe: {
-    backgroundColor: "#fff",
+    backgroundColor: "#ff5900ff",
   },
 
   nav: {

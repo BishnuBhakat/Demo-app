@@ -11,6 +11,11 @@ export default function CartScreen() {
   const [tab, setTab] = useState<TabKey>("clothing");
   const router = useRouter();
 
+
+  const tabLabel = (name: string, count: number) =>
+  count > 0 ? `${name} (${count})` : name;
+
+
   const {
     cart,
     increaseQty,
@@ -67,25 +72,25 @@ export default function CartScreen() {
         contentContainerStyle={styles.tabRow}
       >
         <TabButton
-          label={`Clothing (${clothingCount})`}
+          label={tabLabel("Clothing", clothingCount)}
           active={tab === "clothing"}
           onPress={() => setTab("clothing")}
         />
 
         <TabButton
-          label={`Grocery (${groceryCount})`}
+          label={tabLabel("Grocery", groceryCount)}
           active={tab === "grocery"}
           onPress={() => setTab("grocery")}
         />
 
         <TabButton
-          label={`Jewellery (${jewelleryCount})`}
+          label={tabLabel("Jewellery", jewelleryCount)}
           active={tab === "jewellery"}
           onPress={() => setTab("jewellery")}
         />
 
         <TabButton
-          label={`Electronics (${electronicsCount})`}
+          label={tabLabel("Electronics", electronicsCount)}
           active={tab === "electronics"}
           onPress={() => setTab("electronics")}
         />
@@ -97,7 +102,7 @@ export default function CartScreen() {
         keyExtractor={(item: any) => `${tab}:${item.id}`}
         contentContainerStyle={{ padding: 12, paddingBottom: 110 }}
         ListEmptyComponent={
-          <Text style={{ padding: 20 }}>No items in this cart.</Text>
+          <Text style={{ padding: 20, textAlign: "center" ,fontWeight:900 }}>No items in this cart.</Text>
         }
         renderItem={({ item }: any) => (
           <View style={styles.card}>
@@ -147,6 +152,7 @@ export default function CartScreen() {
       />
 
       {/* Footer */}
+      {activeTotal > 0 && (
       <View style={styles.footer}>
         <View>
           <Text style={styles.totalLabel}>Total Amount</Text>
@@ -167,6 +173,7 @@ export default function CartScreen() {
           </Text>
         </Pressable>
       </View>
+      )}
     </View>
   );
 }
