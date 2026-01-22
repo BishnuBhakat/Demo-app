@@ -52,15 +52,15 @@ export default function HeaderNav() {
 
 const styles = StyleSheet.create({
   safe: {
-    backgroundColor: "#ff5900ff",
+    flex: 0,
+    backgroundColor: "#d1d1f6",
   },
 
   nav: {
     flexDirection: "row",
     paddingVertical: 10,
-    paddingHorizontal: 6,
-    borderBottomWidth: 1,
-    borderColor: "#e5e7eb",
+    paddingHorizontal: 3,
+    borderColor: "#d1d1f6",
   },
 
   item: {
@@ -71,9 +71,10 @@ const styles = StyleSheet.create({
 
   /* 🔵 ICON CONTAINER (Flipkart style) */
   iconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+  
     backgroundColor: "#f3f4f6",
     alignItems: "center",
     justifyContent: "center",

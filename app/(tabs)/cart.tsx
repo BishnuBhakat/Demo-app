@@ -199,11 +199,10 @@ function TabButton({
 
 const styles = StyleSheet.create({
   container: {  backgroundColor: "#fff" },
-  title: { fontSize: 26, fontWeight: "900", padding: 12 },
+  title: { fontSize: 26, fontWeight: "900", padding: 10 },
 
 tabRow: {
   flexDirection: "row",
-  paddingHorizontal: 5,
   borderBottomWidth: 1,
   borderColor: "#e5e7eb",
 },

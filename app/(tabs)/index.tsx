@@ -15,7 +15,6 @@ import HeaderNav from "../../components/HeaderNav";
 import { OFFERS } from "../data/offersData";
 import { TRENDING } from "../data/trendingData";
 import { RANDOM_ITEMS } from "../data/randomItemsData";
-
 export default function Home() {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
@@ -30,11 +29,13 @@ export default function Home() {
       params: { q: searchText },
     });
 
-  return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+  return ( 
+    
+    <ScrollView  showsVerticalScrollIndicator={false}>
       <HeaderNav />
-
+    
       {/* 🔵 ADDRESS + SEARCH (AMAZON STYLE BLOCK) */}
+      <View style={{ flex:1,  }} />
       <View style={styles.topBlock}>
         {/* Address */}
         {/* Address (THINNER & NOT BOLD) */}
@@ -44,8 +45,10 @@ export default function Home() {
             DIPTI BHOWMIK, 711204
           </Text>
         </Pressable>
-
+      </View>
+     
         {/* Search (WIDER + ICON) */}
+      <View style={{flex:1}} />
         <View style={styles.sticky}>
           <View style={styles.searchRow}>
             <View style={styles.searchInputWrap}>
@@ -64,9 +67,10 @@ export default function Home() {
             </Pressable>
           </View>
         </View>
-      </View>
-
+     
+      
       {/* OFFERS */}
+      <View style={{ flex: 1 }} />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -78,6 +82,7 @@ export default function Home() {
       </ScrollView>
 
       {/* TRENDING */}
+      <View style={{ flex: 1 }} />
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Trending for You</Text>
@@ -103,8 +108,10 @@ export default function Home() {
           )}
         />
       </View>
-
+    
+      
       {/* TOP DEALS */}
+      <View style={{ flex: 1 }} />
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Top Deals</Text>
@@ -132,6 +139,7 @@ export default function Home() {
       </View>
 
       {/* EXPLORE MORE */}
+      <View style={{ flex: 1 }} />
       <Pressable onPress={goExploreMore} style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Explore More</Text>
@@ -148,118 +156,125 @@ export default function Home() {
           </View>
         ))}
       </Pressable>
-
-      <View style={{ height: 20 }} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#00ff15ff" },
-
   /* 🔵 TOP BLOCK */
   topBlock: {
-    backgroundColor: "#885d5de7",
-    paddingHorizontal: 14,
-    paddingTop: 12,
-    paddingBottom: 14,
+    backgroundColor: "#d1d1f6",
+    paddingHorizontal: 0,
+    paddingTop: 10,
+    paddingBottom: 10,
     borderBottomWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: "#d1d1f6",
     zIndex: 100,
   },
 
   addressWrap: {
-    backgroundColor: "#eef2f7",
+    backgroundColor: "#e2e2f7ff",
     paddingVertical: 8,        // 👈 thinner
     paddingHorizontal: 12,
-    borderRadius: 12,
-    marginBottom: 8,           // 👈 less gap
+    borderRadius: 990,
+    marginBottom: 4,           // 👈 less gap
+    maxWidth: "100%",
   },
-
   addressLabel: {
-    fontSize: 11,
-    color: "#6b7280",
+    fontSize: 12,
+    color: "#000000ff",
     fontWeight: "500",         // 👈 not bold
   },
 
   addressText: {
     fontSize: 14,
     fontWeight: "600",         // 👈 lighter than before
-    color: "#111827",
+    color: "#000000ff",
   },
   sticky: {
-    paddingBottom: 10,
+    paddingTop:0 ,
   },
   searchRow: {
+    backgroundColor: "#d1d1f6",
+    paddingHorizontal: 7,
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    paddingTop: 6,
+    paddingBottom: 10,
+    gap: 15,
   },
   searchInputWrap: {
     flex: 1,                   // 👈 makes search bar wider
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#e5e7eb",
-    borderRadius: 14,
+    backgroundColor: "#e2e2f7ff",
+    borderRadius: 100,
     paddingHorizontal: 12,
     height: 46,
+    maxWidth: "100%",
   },
 
   searchIcon: {
     fontSize: 18,
     marginRight: 6,
-    color: "#6b7280",
+    color: "#0055ffff",
   },
 
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    paddingVertical: 0,
+    fontSize: 18,
+    height: "100%",
   },
 
   searchBtn: {
-    backgroundColor: "#2563eb",
+    backgroundColor: "#e2e2f7ff",
     paddingHorizontal: 18,
     paddingVertical: 12,
-    borderRadius: 14,
+    borderRadius: 700,
+    height: "100%",
   },
 
   searchBtnText: {
-    color: "#fff",
-    fontWeight: "900",
+    color: "#8f8585ff",
+    fontSize: 18,
+    fontWeight: "600",
   },
 
 
-  carousel: { paddingHorizontal: 14, marginTop: 14 },
+  carousel: {  
+      backgroundColor: "#d1d1f6",
+   },
   banner: {
-    width: 320,
-    height: 150,
-    borderRadius: 16,
-    marginRight: 12,
+    width: 310,
+    height: 200,
+    borderRadius: 10,
+    marginRight: 15,
   },
 
-  section: { paddingHorizontal: 14, marginTop: 20 },
+  section: { paddingHorizontal: 3, marginTop: 0, backgroundColor: "#d1d1f6" },
   sectionHeader: {
+    backgroundColor: "#d1d1f6",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginTop: 10,
+    marginBottom: 15,
   },
-  sectionTitle: { fontSize: 18, fontWeight: "900" },
-  viewAll: { color: "#2563eb", fontWeight: "900" },
+  sectionTitle: { fontSize: 18, fontWeight: "900",padding: 7 },
+  viewAll: { color: "#8989beff", padding: 7, fontWeight: "900" },
 
   trendingCard: {
-    backgroundColor: "#fff",
+    backgroundColor: "#e2e2f7ff",
     borderRadius: 14,
     padding: 10,
     marginRight: 12,
-    width: 120,
+    width: "auto",
   },
   trendingImg: { width: 100, height: 100, borderRadius: 12 },
 
   listItem: {
     flexDirection: "row",
-    backgroundColor: "#fff",
+    backgroundColor: "#fb0606ff",
     borderRadius: 14,
     padding: 12,
     marginBottom: 10,
